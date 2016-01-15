@@ -8,48 +8,31 @@ import org.junit.Test;
 import org.mockito.Spy;
 import org.springframework.jms.core.JmsTemplate;
 
-import javax.jms.*;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.Hashtable;
 
 import static mockit.Mockit.setUpMocks;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Michael Couck
  * @version 01.00
  * @since 08-06-2015
  */
-public class WeblogicTest extends AbstractTest {
+public class WebSphereConnectorTest extends AbstractTest {
 
-    @Spy
-    private Weblogic weblogic;
-
-    @org.mockito.Mock
-    private Session session;
-    @org.mockito.Mock
-    private TextMessage message;
-    @org.mockito.Mock
-    private Connection connection;
-    @org.mockito.Mock
-    private Destination destination;
-    @org.mockito.Mock
-    private MessageProducer producer;
-    @org.mockito.Mock
-    private ConnectionFactory connectionFactory;
-
+    @SuppressWarnings("UnusedDeclaration")
     @MockClass(realClass = InitialContext.class)
     public class InitialContextMock {
 
         @Mock
-        public void $init(Hashtable<?, ?> environment) {
+        public void $init(final Hashtable<?, ?> environment) {
         }
 
         @Mock
-        @SuppressWarnings("UnusedDeclaration")
         public Object lookup(final String name) {
             if (name.contains("connection")) {
                 return connectionFactory;
@@ -61,18 +44,22 @@ public class WeblogicTest extends AbstractTest {
 
     }
 
+    @org.mockito.Mock
+    private Destination destination;
+    @org.mockito.Mock
+    private ConnectionFactory connectionFactory;
+
+    @Spy
+    private WebSphereConnector webSphereConnector;
+
     @Before
-    public void before() throws JMSException {
+    public void before() {
         setUpMocks(this.new InitialContextMock());
-        when(connectionFactory.createConnection(anyString(), anyString())).thenReturn(connection);
-        when(connection.createSession(Boolean.FALSE, TopicSession.AUTO_ACKNOWLEDGE)).thenReturn(session);
-        when(session.createProducer(destination)).thenReturn(producer);
-        when(session.createTextMessage(anyString())).thenReturn(message);
     }
 
     @Test
-    public void publish() throws NamingException {
-        JmsTemplate jmsTemplate = weblogic.connect("userid", "password", "url", "connection-factory", "destination");
+    public void connect() throws NamingException {
+        JmsTemplate jmsTemplate = webSphereConnector.connect("userid", "password", "url", "connection-factory", "destination");
         assertNotNull("The connection factory must be set : ", jmsTemplate.getConnectionFactory());
         assertNotNull("The default destination must be set from the JNDi initial context : ", jmsTemplate.getDefaultDestination());
     }

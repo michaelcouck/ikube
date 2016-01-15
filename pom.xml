@@ -228,7 +228,7 @@
                     <source>${targetJdk}</source>
                     <target>${targetJdk}</target>
                     <encoding>${encoding}</encoding>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                     <compilerArguments>
                         <verbose/>
                     </compilerArguments>
@@ -1389,7 +1389,7 @@
         <dependency>
             <groupId>org.neuroph</groupId>
             <artifactId>neuroph-core</artifactId>
-            <version>2.9</version>
+            <version>2.92</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

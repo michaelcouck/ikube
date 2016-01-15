@@ -1,7 +1,7 @@
 package ikube.jms;
 
 import ikube.AbstractTest;
-import ikube.jms.connect.Weblogic;
+import ikube.jms.connect.WeblogicConnector;
 import mockit.Mock;
 import mockit.MockClass;
 import org.junit.Before;
@@ -30,7 +30,7 @@ public class PublisherTest extends AbstractTest {
     private JmsTemplate jmsTemplate = mock(JmsTemplate.class);
 
     @SuppressWarnings("UnusedDeclaration")
-    @MockClass(realClass = Weblogic.class)
+    @MockClass(realClass = WeblogicConnector.class)
     public class WeblogicMock {
 
         @Mock
@@ -98,7 +98,7 @@ public class PublisherTest extends AbstractTest {
                 "property",
                 "value",
                 "payload",
-                Weblogic.class.getName(), 1, null);
+                WeblogicConnector.class.getName(), 1, null);
         verify(jmsTemplate, times(1)).send(any(MessageCreator.class));
 
         publisher.publish(
@@ -110,7 +110,7 @@ public class PublisherTest extends AbstractTest {
                 "property",
                 "value",
                 "payload",
-                Weblogic.class.getName(), 10, "messages");
+                WeblogicConnector.class.getName(), 10, "messages");
         verify(jmsTemplate, times(11)).send(any(MessageCreator.class));
     }
 

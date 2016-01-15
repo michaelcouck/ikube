@@ -26,7 +26,7 @@ public class ZipLocatorTest extends AbstractTest {
             // String[] args = {"/home/laptop/Workspace/credit-suisse", ".*(.jar)\\Z", "TagSupport"};
             // String[] args = {"/home/laptop/Downloads", ".*(.jar)\\Z|.*(.ear)\\Z", "paymentorder.xml"};
             // String[] args = {"/home/laptop/Downloads", ".*(.jar)\\Z|.*(.jar)\\Z|.*(.ear)\\Z", "sanctionfiltering.xml"};
-            String[] args = {"/home", ".*(.jar)\\Z", "com.ibm.ws.channel.framework.Version"};
+            String[] args = {"/home", ".*(.jar)\\Z", "SSOToken"};
             // String[] args = {"/home/laptop/.m2", ".*(.jar)\\Z", "EJBObject"};
             ZipLocator.main(args);
         } catch (final Exception e) {

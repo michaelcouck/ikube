@@ -111,7 +111,8 @@ public class NeurophAnalyzer extends AAnalyzer<Analysis, Analysis, Analysis> {
         if (Adaline.class.isAssignableFrom(clazz)) {
             neuralNetwork = new Adaline(options.getInputNeuronsCount());
         } else if (AutoencoderNetwork.class.isAssignableFrom(clazz)) {
-            neuralNetwork = new AutoencoderNetwork(options.getNeuronsInLayersArray());
+            // TODO: Set the input and output for the auto encoder
+            neuralNetwork = new AutoencoderNetwork(options.getNeuronsInLayersArray()[0], options.getNeuronsInLayersArray()[0]);
         } else if (BAM.class.isAssignableFrom(clazz)) {
             neuralNetwork = new BAM(options.getInputNeuronsCount(), options.getOutputNeuronsCount());
         } else if (CompetitiveNetwork.class.isAssignableFrom(clazz)) {

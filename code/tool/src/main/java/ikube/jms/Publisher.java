@@ -21,6 +21,7 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -29,7 +30,11 @@ import java.util.concurrent.Future;
  * can be passed to the publisher.
  * <p/>
  * <pre>
- *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u qcfuser -p passw0rd -url t3://be-qa-cs-18.clear2pay.com:8001 -cf jms/QCF -d jms/InterchangeLoaderQ -pl Hello-World -ct ikube.jms.connect.Weblogic -i 10 -f messages
+ *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u admin -p password -u t3://be-qa-cs-18.clear2pay.com:8001 -cf
+ *          jms/QCF -d jms/InterchangeLoaderQ -pl Hello-World -ct ikube.jms.connect.Weblogic -i 10 -f messages
+ *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u admin -p password -u iiop://192.168.1.102:2809 -cf
+ *          cell/nodes/app1/servers/OPFClusterApp1/jms/QCF -d cell/nodes/app1/servers/OPFClusterApp1/jms/InterchangeLoaderQ -pl
+ *          Hello-World -ct ikube.jms.connect.WebSphereMQ -i 10 -f messages
  * </pre>
  *
  * @author Michael Couck
@@ -50,28 +55,29 @@ public class Publisher {
     @Option(name = "-url")
     private String url;
     @Option(name = "-cf")
-    private String connectionFactory;
+    private String connectionFactoryName;
     @Option(name = "-d")
-    private String destination;
+    private String destinationName;
+    @Option(name = "-ct")
+    private String connectorType;
+
     @Option(name = "-h")
     private String headerNames;
     @Option(name = "-v")
     private String headerValues;
     @Option(name = "-pl")
     private String payload;
-    @Option(name = "-ct")
-    private String connection;
-    @Option(name = "-i")
-    private int iterations;
     @Option(name = "-f")
     private String folder;
+    @Option(name = "-i")
+    private int iterations;
 
     /**
      * The main that will be called from the {@link ikube.Ikube} class.
      *
      * @param args arguments are very specific, and they are all mandatory except for the header names and values. So
      *             to enumerate the required parameters:
-     *             username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection
+     *             username, password, url, connectionFactoryName, destinationName, headerNames, headerValues, payload, connectorType
      * @throws Exception
      */
     public static void main(final String[] args) throws Exception {
@@ -100,27 +106,27 @@ public class Publisher {
     }
 
     /**
-     * Publishes a message to a destination using the properties that are parsed on the command line.
+     * Publishes a message to a destinationName using the properties that are parsed on the command line.
      *
      * @throws JMSException
      * @throws NamingException
      */
     public void publish() throws Exception {
-        publish(username, password, url, connectionFactory, destination, headerNames, headerValues, payload, connection, iterations, folder);
+        publish(username, password, url, connectionFactoryName, destinationName, headerNames, headerValues, payload, connectorType, iterations, folder);
     }
 
     /**
      * Publishes a message to either a queue or a topic.
      *
-     * @param userid            the userid to connect to the connection factory
-     * @param password          the password for the connection factory, for example
-     * @param url               the url string to the provider, for example 't3://be-qa-cs-18.clear2pay.com:8001'
-     * @param connectionFactory the name of the connection factory in JNDI, for example 'jms/QCF'
-     * @param destination       the destination name, for example my-queue, or 'jms/InterchangeloaderQ'
-     * @param headerNames       header keys for the message, for example 'BankName'
-     * @param headerValues      header values for the message, for example 'Credit Suisse'
-     * @param payload           the message body, typically text or xml
-     * @param connectionType    the connection type, i.e. Weblogic, MQ etc, for example 'ikube.jms.connection.Weblogic'
+     * @param userid                the userid to connect to the connectorType factory
+     * @param password              the password for the connectorType factory, for example
+     * @param url                   the url string to the provider, for example 't3://be-qa-cs-18.clear2pay.com:8001'
+     * @param connectionFactoryName the name of the connectorType factory in JNDI, for example 'jms/QCF'
+     * @param destinationName       the destinationName name, for example my-queue, or 'jms/InterchangeloaderQ'
+     * @param headerNames           header keys for the message, for example 'BankName'
+     * @param headerValues          header values for the message, for example 'Credit Suisse'
+     * @param payload               the message body, typically text or xml
+     * @param connectorType         the connectorType type, i.e. Weblogic, MQ etc, for example 'ikube.jms.connectorType.Weblogic'
      * @throws NamingException
      * @throws JMSException
      */
@@ -128,31 +134,36 @@ public class Publisher {
             final String userid,
             final String password,
             final String url,
-            final String connectionFactory,
-            final String destination,
+            final String connectionFactoryName,
+            final String destinationName,
             final String headerNames,
             final String headerValues,
             final String payload,
-            final String connectionType,
+            final String connectorType,
             final int iterations,
             final String folderName)
             throws Exception {
 
-        String[] headers = StringUtils.split(headerNames, ",;:|");
-        String[] values = StringUtils.split(headerValues, ",;:|");
-        if (headers == null || values == null) {
-            headers = new String[0];
-            values = new String[0];
-            logger.debug("Headers and values not being populated : {}, {}", headerNames, headerValues);
+        String[] headers = new String[0];
+        String[] values = new String[0];
+        if (StringUtils.isNotEmpty(headerNames) && StringUtils.isNotEmpty(headerValues)) {
+            headers = StringUtils.split(headerNames, ",;:|");
+            values = StringUtils.split(headerValues, ",;:|");
         }
+        logger.info("Headers and values not being populated : names : {}, values : {}", headerNames, headerValues);
 
-        IConnector connector = (IConnector) Class.forName(connectionType).newInstance();
-        JmsTemplate jmsTemplate = connector.connect(userid, password, url, connectionFactory, destination);
-        if (StringUtils.isEmpty(folderName)) {
+        IConnector connector = (IConnector) Class.forName(connectorType).newInstance();
+        JmsTemplate jmsTemplate = connector.connect(userid, password, url, connectionFactoryName, destinationName);
+
+        logger.info("Payload : " + payload + ", folder name : " + folderName);
+        if (StringUtils.isNotEmpty(payload)) {
             publishText(jmsTemplate, payload, headers, values, iterations);
-        } else {
+        } else if (StringUtils.isNotEmpty(folderName)) {
             publishFiles(jmsTemplate, folderName, headers, values, iterations);
+        } else {
+            throw new RuntimeException("Either the payload or the folder for the files needs to be specified : ");
         }
+        System.exit(0);
     }
 
     void publishText(final JmsTemplate jmsTemplate, final String payload, final String[] headers, final String[] values, final int iterations) {
@@ -165,9 +176,9 @@ public class Publisher {
     }
 
     void publishFiles(final JmsTemplate jmsTemplate, final String folderName, final String[] headers, final String[] values, final int iterations) {
-        File folder = FILE.findDirectoryRecursively(new File("."), new String[]{folderName});
-        File[] files = folder.listFiles();
-        if (files != null && files.length > 0) {
+        List<File> files = FILE.findFilesRecursively(new File(folderName), new ArrayList<File>(), ".xml");
+        if (!files.isEmpty()) {
+            Collections.sort(files);
             List<String> payloads = new ArrayList<>();
             for (final File file : files) {
                 String payload = FILE.getContents(file, IConstants.ENCODING);
@@ -208,8 +219,7 @@ public class Publisher {
             public Message createMessage(final Session session) throws JMSException {
                 TextMessage textMessage = session.createTextMessage(payload);
                 for (int i = 0; i < headers.length; i++) {
-                    String header = headers[i];
-                    textMessage.setObjectProperty(header, values[i]);
+                    textMessage.setObjectProperty(headers[i], values[i]);
                 }
                 return textMessage;
             }

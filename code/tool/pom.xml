@@ -147,7 +147,12 @@
             <version>2.3.1</version>
             <scope>compile</scope>
         </dependency>
-
+        <!--<dependency>-->
+            <!--<groupId>com.ibm</groupId>-->
+            <!--<artifactId>ws.orb</artifactId>-->
+            <!--<version>8.5.0</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -236,5 +241,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>ikube-ext</id>
+            <url>http://ikube.be/artifactory/ext-release-local/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

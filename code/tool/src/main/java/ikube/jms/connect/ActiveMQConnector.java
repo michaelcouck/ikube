@@ -1,5 +1,7 @@
 package ikube.jms.connect;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
@@ -10,13 +12,20 @@ import javax.naming.NamingException;
 import java.util.Hashtable;
 
 /**
- * This is the Weblogic implementation for the connection to the JMS provider.
+ * NOTE: Not fully implemented/tested.
+ * <p/>
+ * This is the ActiveMQ implementation for the connection to the JMS provider.
  *
  * @author Michael Couck
  * @version 01.00
+ * @see IConnector
  * @since 08-06-2015
  */
-public class Weblogic implements IConnector {
+@SuppressWarnings("UnusedDeclaration")
+public class ActiveMQConnector implements IConnector {
+
+    @SuppressWarnings("UnusedDeclaration")
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * {@inheritDoc}
@@ -32,7 +41,7 @@ public class Weblogic implements IConnector {
         properties.put(Context.PROVIDER_URL, url);
         properties.put(Context.SECURITY_PRINCIPAL, userid);
         properties.put(Context.SECURITY_CREDENTIALS, password);
-        properties.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
 
         InitialContext initialContext = new InitialContext(properties);
 

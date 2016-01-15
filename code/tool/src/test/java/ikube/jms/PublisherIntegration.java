@@ -1,9 +1,9 @@
 package ikube.jms;
 
 import ikube.AbstractTest;
-import ikube.jms.connect.ActiveMQ;
-import ikube.jms.connect.WebSphereMQ;
-import ikube.jms.connect.Weblogic;
+import ikube.jms.connect.ActiveMQConnector;
+import ikube.jms.connect.WebSphereConnector;
+import ikube.jms.connect.WeblogicConnector;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +14,6 @@ import org.mockito.Spy;
  * @version 01.00
  * @since 11-03-2015
  */
-@Ignore
 public class PublisherIntegration extends AbstractTest {
 
     @Spy
@@ -26,6 +25,35 @@ public class PublisherIntegration extends AbstractTest {
     }
 
     @Test
+    public void publishRemoteWas() throws Exception {
+        publisher.publish(
+                "admin",
+                "password",
+                "iiop://192.168.1.102:2809",
+                "cell/nodes/app1/servers/OPFClusterApp1/jms/QCF",
+                "cell/nodes/app1/servers/OPFClusterApp1/jms/InterchangeLoaderQ",
+                "headerName",
+                "headerValue",
+                "Hello world",
+                WebSphereConnector.class.getName(), 1, null);
+    }
+
+    @Test
+    @Ignore
+    public void publishRemoteActiveMQ() throws Exception {
+        publisher.publish("userid",
+                "password",
+                "tcp://localhost:61616",
+                "jms/QCF",
+                "jms/InterchangeLoaderQ",
+                "headerName",
+                "headerValue",
+                "payload",
+                ActiveMQConnector.class.getCanonicalName(), 1, null);
+    }
+
+    @Test
+    @Ignore
     public void publishRemoteWebLogic() throws Exception {
         publisher.publish(
                 "qcfuser",
@@ -36,34 +64,7 @@ public class PublisherIntegration extends AbstractTest {
                 "headerName",
                 "headerValue",
                 "payload",
-                Weblogic.class.getName(), 1, null);
-    }
-
-    @Test
-    public void publishRemoteMQ() throws Exception {
-        publisher.publish(
-                "qcfuser",
-                "passw0rd",
-                "iiop:ikube.be:2809",
-                "jms/QCF",
-                "jms/InterchangeLoaderQ",
-                "headerName",
-                "headerValue",
-                "payload",
-                WebSphereMQ.class.getName(), 1, null);
-    }
-
-    @Test
-    public void publishRemoteActiveMQ() throws Exception {
-        publisher.publish("userid",
-                "password",
-                "tcp://localhost:61616",
-                "jms/QCF",
-                "jms/InterchangeLoaderQ",
-                "headerName",
-                "headerValue",
-                "payload",
-                ActiveMQ.class.getCanonicalName(), 1, null);
+                WeblogicConnector.class.getName(), 1, null);
     }
 
 }
