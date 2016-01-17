@@ -1389,7 +1389,7 @@
         <dependency>
             <groupId>org.neuroph</groupId>
             <artifactId>neuroph-core</artifactId>
-            <version>2.92</version>
+            <version>2.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -1436,6 +1436,16 @@
 
     <repositories>
         <repository>
+            <id>ikube</id>
+            <url>http://ikube.be/artifactory/libs-release-local/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>central</id>
             <url>http://repo1.maven.org/maven2</url>
             <releases>
@@ -1467,17 +1477,6 @@
         <repository>
             <id>snapshots-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>ikube</id>
-            <url>http://ikube.be/artifactory/libs-release-local/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
