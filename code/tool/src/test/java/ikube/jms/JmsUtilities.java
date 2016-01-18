@@ -16,25 +16,42 @@ public class JmsUtilities {
 
     private static Logger LOGGER = LoggerFactory.getLogger(JmsUtilities.class);
 
+    private static BrokerService BROKER = new BrokerService();
+
     /**
      * This starts a JMS server, using the default(ActiveMQ) JMS provider,
      * so that we can test the JMS functionality in a dynamic way in integration
      * tests.
      */
     public static void startServer() {
-        // Set up the broker, i.e. the jms server
-        BrokerService broker = new BrokerService();
-        broker.setUseJmx(true);
-        broker.setBrokerName("fred");
-        broker.setUseShutdownHook(false);
+        if (BROKER.isStarted()) {
+            LOGGER.info("Broker already running : " + BROKER);
+            return;
+        }
+        // Set up the BROKER, i.e. the jms server
+        BROKER.setUseJmx(true);
+        BROKER.setBrokerName("fred");
+        BROKER.setUseShutdownHook(false);
 
         TransportConnector connector = new TransportConnector();
         try {
             connector.setUri(new URI("tcp://localhost:61616"));
-            broker.addConnector(connector);
-            broker.start();
+            BROKER.addConnector(connector);
+            BROKER.start();
         } catch (final Exception e) {
             LOGGER.error("Exception starting the JMS server programmatically : ", e);
+        }
+    }
+
+    public static void stopServer() {
+        try {
+            if (BROKER.isStarted()) {
+                BROKER.stop();
+            } else {
+                LOGGER.info("Broker not running : " + BROKER);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Exception stopping the JMS server programmatically : ", e);
         }
     }
 

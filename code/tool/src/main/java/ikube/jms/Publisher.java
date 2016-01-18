@@ -82,6 +82,7 @@ public class Publisher {
      */
     public static void main(final String[] args) throws Exception {
         new Publisher(args).publish();
+        System.exit(0);
     }
 
     /**
@@ -163,7 +164,6 @@ public class Publisher {
         } else {
             throw new RuntimeException("Either the payload or the folder for the files needs to be specified : ");
         }
-        System.exit(0);
     }
 
     void publishText(final JmsTemplate jmsTemplate, final String payload, final String[] headers, final String[] values, final int iterations) {

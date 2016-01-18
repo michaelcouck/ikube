@@ -36,6 +36,7 @@ public class Browser {
 
     public static void main(final String[] args) throws Exception {
         new Browser(args).browse();
+        System.exit(0);
     }
 
     public Browser() {

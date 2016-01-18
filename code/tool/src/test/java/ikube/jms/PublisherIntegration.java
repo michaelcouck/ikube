@@ -4,7 +4,8 @@ import ikube.AbstractTest;
 import ikube.jms.connect.ActiveMQConnector;
 import ikube.jms.connect.WebSphereConnector;
 import ikube.jms.connect.WeblogicConnector;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Spy;
@@ -19,9 +20,14 @@ public class PublisherIntegration extends AbstractTest {
     @Spy
     private Publisher publisher;
 
-    @Before
-    public void before() {
+    @BeforeClass
+    public static void beforeClass() {
         JmsUtilities.startServer();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        JmsUtilities.stopServer();
     }
 
     @Test
