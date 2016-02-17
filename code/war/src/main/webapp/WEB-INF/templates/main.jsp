@@ -61,9 +61,12 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js" type='text/javascript'></script>
 	<%--<script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.6.0.js" />" type='text/javascript'></script>--%>
 	<%-- <script src="<c:url value="/assets/javascripts/ui-bootstrap-tpls-0.4.0.js" />" type='text/javascript'></script> --%>
-	<script type="text/javascript" src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>
+	<%--<script type="text/javascript" src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>--%>
+	<%--<script type="text/javascript" src="https://raw.githubusercontent.com/angular-ui/ui-slider/master/src/slider.js"></script>--%>
     <%--<script src="<c:url value="/assets/javascripts/ng-flow-standalone.js" />" type="text/javascript"></script>--%>
     <%--<script src="<c:url value="/assets/javascripts/upload.js" />" type="text/javascript"></script>--%>
+
+    <script src="<c:url value="/assets/javascripts/slider.js" />" type="text/javascript"></script>
 
 	<!-- Must be after Angular -->
 	<script src="<c:url value="/assets/javascripts/ng-google-chart.js" />" type="text/javascript"></script>
