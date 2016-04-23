@@ -47,8 +47,8 @@
         <module>code/core</module>
         <module>code/war</module>
         <module>code/libs</module>
-        <module>code/site</module>
-        <module>code/web</module>
+        <!--<module>code/site</module>-->
+        <!--<module>code/web</module>-->
         <module>code/tool</module>
     </modules>
 
@@ -72,7 +72,7 @@
         <serenity-parameters>${write-classes} ${clean-classes} ${included-packages} ${excluded-packages} ${included-adapters} -noverify</serenity-parameters>
 
         <headless-parameters>-Djava.awt.headless=true</headless-parameters>
-        <memory-parameters>-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx4096m</memory-parameters>
+        <memory-parameters>-XX:PermSize=1024m -XX:MaxPermSize=2048m -Xms2048m -Xmx4096m</memory-parameters>
 
         <!--
             Lucene:
@@ -175,9 +175,9 @@
                                     <copy todir="ikube/indexes/twitter">
                                         <fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/>
                                     </copy>
-                                    <copy todir="experimental">
+                                    <!--<copy todir="experimental">
                                         <fileset dir="../libs/src/main/resources/experimental" includes="**"/>
-                                    </copy>
+                                    </copy>-->
                                 </target>
                             </configuration>
                             <goals>
@@ -243,7 +243,8 @@
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
-                    <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
+                    <!-- -javaagent:${project.parent.basedir}/serenity/serenity.jar-->
+                    <argLine>${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
             <!-- This plugin runs the integration tests. -->

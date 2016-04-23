@@ -32,8 +32,7 @@
 		property:testConnectionOnCheckin="${jdbc.testConnectionOnCheckin}"
 		property:testConnectionOnCheckout="${jdbc.testConnectionOnCheckout}"
 		property:unreturnedConnectionTimeout="${jdbc.unreturnedConnectionTimeout}" />
-	
-	
+
 	<bean id="h2DataSourceBinder" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
 		property:staticMethod="ikube.toolkit.JndiInjector.bind">
 		<property name="arguments">
