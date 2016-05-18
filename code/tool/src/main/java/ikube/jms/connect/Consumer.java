@@ -1,23 +1,16 @@
-package ikube.jms;
+package ikube.jms.connect;
 
-import ikube.jms.connect.IConnector;
 import ikube.toolkit.THREAD;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 
-import javax.jms.JMSException;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import javax.jms.Message;
 
-public class Browser {
+public class Consumer {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,26 +30,26 @@ public class Browser {
     private String connectorType;
 
     public static void main(final String[] args) throws Exception {
-        new Browser(args).browse();
+        new Consumer(args).consume();
         System.exit(0);
     }
 
-    public Browser() {
+    public Consumer() {
         THREAD.initialize();
     }
 
-    public Browser(final String[] args) throws CmdLineException {
+    public Consumer(final String[] args) throws CmdLineException {
         this();
         CmdLineParser parser = new CmdLineParser(this);
         parser.setUsageWidth(140);
         parser.parseArgument(args);
     }
 
-    public void browse() throws Exception {
-        browse(username, password, url, connectionFactoryName, destinationName, queueName, connectorType);
+    public void consume() throws Exception {
+        consume(username, password, url, connectionFactoryName, destinationName, queueName, connectorType);
     }
 
-    public void browse(
+    public void consume(
             final String username,
             final String password,
             final String url,
@@ -65,20 +58,15 @@ public class Browser {
             final String queueName,
             final String connectorType)
             throws Exception {
+        logger.info("Factory : " + connectionFactory + ", " + destinationName + ", " + queueName);
         IConnector connector = (IConnector) Class.forName(connectorType).newInstance();
         JmsTemplate jmsTemplate = connector.connect(username, password, url, connectionFactory, destinationName);
-        jmsTemplate.browse(queueName, new BrowserCallback<Void>() {
-            @Override
-            public Void doInJms(final Session session, final QueueBrowser browser) throws JMSException {
-                Enumeration enumeration = browser.getEnumeration();
-                List list = Collections.list(enumeration);
-                logger.info("Messages : " + list.size());
-                //for (final Object message : list) {
-                //    logger.info("Message : " + message);
-                //}
-                return null;
-            }
-        });
+        jmsTemplate.setReceiveTimeout(-1);
+        Message message = jmsTemplate.receive(queueName);
+        while (message != null) {
+            logger.info(null, message);
+            message = jmsTemplate.receive(queueName);
+        }
     }
 
 }

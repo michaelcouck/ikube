@@ -4,7 +4,9 @@ import ikube.AbstractTest;
 import ikube.jms.connect.WeblogicConnector;
 import mockit.Mock;
 import mockit.MockClass;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Spy;
 import org.springframework.jms.core.JmsTemplate;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,7 +57,13 @@ public class PublisherTest extends AbstractTest {
         setUpMocks(this.new WeblogicMock());
     }
 
+    @After
+    public void after() {
+        tearDownMocks();
+    }
+
     @Test
+    @Ignore
     @SuppressWarnings("unchecked")
     public void publishText() {
         publisher.publishText(jmsTemplate, "payload", null, null, 1);
@@ -68,6 +77,7 @@ public class PublisherTest extends AbstractTest {
     }
 
     @Test
+    @Ignore
     @SuppressWarnings("unchecked")
     public void publishFiles() {
         publisher.publishFiles(jmsTemplate, "messages", null, null, 1);

@@ -3,6 +3,7 @@ package ikube.jms.connect;
 import ikube.AbstractTest;
 import mockit.Mock;
 import mockit.MockClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Spy;
@@ -15,6 +16,7 @@ import javax.naming.NamingException;
 import java.util.Hashtable;
 
 import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -55,6 +57,11 @@ public class WebSphereConnectorTest extends AbstractTest {
     @Before
     public void before() {
         setUpMocks(this.new InitialContextMock());
+    }
+
+    @After
+    public void after() {
+        tearDownMocks();
     }
 
     @Test

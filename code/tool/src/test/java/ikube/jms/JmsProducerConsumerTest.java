@@ -21,7 +21,7 @@ public class JmsProducerConsumerTest {
         // Connect to the broker with the producer and send some
         // messages, and connect with the consumer and receive some messages
         JmsProducerConsumer.main(null);
-        Thread.sleep(60000);
+        Thread.sleep(10000);
     }
 
 }

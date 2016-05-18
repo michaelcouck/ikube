@@ -6,7 +6,7 @@ import javax.naming.NamingException;
 
 /**
  * This interface encapsulates the connection to various providers, like SIBus, Weblogic and WebSphere. The
- * result of the operation is a JMS ({@link org.springframework.jms.core.JmsTemplate}) template from Spring populated
+ * result of the operation is a JMS ({@link JmsTemplate}) template from Spring populated
  * and connected to the target connection factory.
  *
  * @author Michael Couck

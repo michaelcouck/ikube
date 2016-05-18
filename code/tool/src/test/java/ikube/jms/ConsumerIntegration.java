@@ -1,5 +1,7 @@
 package ikube.jms;
 
+import ikube.jms.connect.Consumer;
+import ikube.jms.connect.WebSphereConnector;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Spy;
@@ -7,18 +9,18 @@ import org.mockito.Spy;
 /**
  * @author Michael Couck
  * @version 01.00
- * @since 15-01-2015
+ * @since 01-03-2016
  */
 @Ignore
-public class BrowserIntegration extends AbstractIntegration {
+public class ConsumerIntegration extends AbstractIntegration {
 
     @Spy
-    private Browser browser;
+    private Consumer consumer;
 
     @Test
-    public void browseRemoteWas() throws Exception {
+    public void consumeRemoteWas() throws Exception {
         for (final String queue : queues) {
-            browser.browse(
+            consumer.consume(
                     userid, // username
                     password, // password
                     url, // url

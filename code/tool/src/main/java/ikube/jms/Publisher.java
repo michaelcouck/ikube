@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import javax.naming.NamingException;
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +32,9 @@ import java.util.concurrent.Future;
  *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u admin -p password -u iiop://192.168.1.102:2809 -cf
  *          cell/nodes/app1/servers/OPFClusterApp1/jms/QCF -d cell/nodes/app1/servers/OPFClusterApp1/jms/InterchangeLoaderQ -pl
  *          Hello-World -ct ikube.jms.connect.WebSphereMQ -i 10 -f messages
+ *     java -jar ikube-tool-5.3.0.jar ikube.jms.Publisher -u admin -p password -u iiop://192.168.1.102:2809 -cf
+ *          cell/nodes/app1/servers/OPFClusterApp1/jms/QCF -d cell/nodes/app1/servers/OPFClusterApp1/jms/InterchangeLoaderQ -f
+ *          messages -ct ikube.jms.connect.WebSphereMQ -i 1
  * </pre>
  *
  * @author Michael Couck
@@ -43,34 +43,37 @@ import java.util.concurrent.Future;
  */
 public class Publisher {
 
-    private static final int MAX_THREADS = 100;
+    private static final int MAX_THREADS = 10;
 
     @SuppressWarnings("UnusedDeclaration")
     private Logger logger = LoggerFactory.getLogger(Publisher.class);
 
-    @Option(name = "-u")
+    @Option(name = "-u", usage = "User name for the remote queue/connection factory")
     private String username;
-    @Option(name = "-p")
+    @Option(name = "-p", usage = "The password for the above user name")
     private String password;
-    @Option(name = "-url")
+    @Option(name = "-url", usage = "The url for the server, something like: iiop://192.168.1.102:2809")
     private String url;
-    @Option(name = "-cf")
+    @Option(name = "-cf", usage = "The connection factory name in WebSphere, 'cell/nodes/app1/servers/OPFClusterApp1/jms/QCF' for example")
     private String connectionFactoryName;
-    @Option(name = "-d")
+    @Option(name = "-d", usage = "The destination queue/topic name in jndi, in WebSphere it is prefixed with the cluster " +
+            "context, i.e. cell/nodes/app1/servers/OPFClusterApp1/jms/InterchangeLoaderQ, as in the connection factory above")
     private String destinationName;
-    @Option(name = "-ct")
+    @Option(name = "-ct", usage = "The type of connection, WebSphere, WebLogic, other, for example: ikube.jms.connect.WebSphereMQ")
     private String connectorType;
 
-    @Option(name = "-h")
+    @Option(name = "-h", usage = "The names of the headers in the JMS message: bankGroupId:bankName:exchangeConditionExternalId")
     private String headerNames;
-    @Option(name = "-v")
+    @Option(name = "-v", usage = "And the above values, in the same format: Nedbank:Nedbank:EC_ACH_MDT_TT1_INIT")
     private String headerValues;
-    @Option(name = "-pl")
+    @Option(name = "-pl", usage = "The payload to put on the queue directly, or in the case of files left empty")
     private String payload;
-    @Option(name = "-f")
+    @Option(name = "-f", usage = "The name of the folder where the files to be uploaded are, full path")
     private String folder;
-    @Option(name = "-i")
+    @Option(name = "-i", usage = "The number of iterations to execute, essentially this will post the same messages n times")
     private int iterations;
+
+    private JmsTemplate jmsTemplate;
 
     /**
      * The main that will be called from the {@link ikube.Ikube} class.
@@ -87,7 +90,7 @@ public class Publisher {
 
     /**
      * Default constructor, the parameters for the message then passed into the
-     * {@link ikube.jms.Publisher#publish(String, String, String, String, String, String, String, String, String, int, String)} method.
+     * {@link Publisher#publish(String, String, String, String, String, String, String, String, String, int, String)} method.
      */
     public Publisher() {
         THREAD.initialize();
@@ -119,7 +122,7 @@ public class Publisher {
     /**
      * Publishes a message to either a queue or a topic.
      *
-     * @param userid                the userid to connect to the connectorType factory
+     * @param username                the userid to connect to the connectorType factory
      * @param password              the password for the connectorType factory, for example
      * @param url                   the url string to the provider, for example 't3://be-qa-cs-18.clear2pay.com:8001'
      * @param connectionFactoryName the name of the connectorType factory in JNDI, for example 'jms/QCF'
@@ -132,7 +135,7 @@ public class Publisher {
      * @throws JMSException
      */
     public void publish(
-            final String userid,
+            final String username,
             final String password,
             final String url,
             final String connectionFactoryName,
@@ -145,6 +148,8 @@ public class Publisher {
             final String folderName)
             throws Exception {
 
+        getJmsTemplate(username, password, url, connectionFactoryName, destinationName, connectorType);
+
         String[] headers = new String[0];
         String[] values = new String[0];
         if (StringUtils.isNotEmpty(headerNames) && StringUtils.isNotEmpty(headerValues)) {
@@ -153,10 +158,6 @@ public class Publisher {
         }
         logger.info("Headers and values not being populated : names : {}, values : {}", headerNames, headerValues);
 
-        IConnector connector = (IConnector) Class.forName(connectorType).newInstance();
-        JmsTemplate jmsTemplate = connector.connect(userid, password, url, connectionFactoryName, destinationName);
-
-        logger.info("Payload : " + payload + ", folder name : " + folderName);
         if (StringUtils.isNotEmpty(payload)) {
             publishText(jmsTemplate, payload, headers, values, iterations);
         } else if (StringUtils.isNotEmpty(folderName)) {
@@ -164,6 +165,17 @@ public class Publisher {
         } else {
             throw new RuntimeException("Either the payload or the folder for the files needs to be specified : ");
         }
+    }
+
+    JmsTemplate getJmsTemplate(final String username, final String password, final String url, final String
+            connectionFactoryName, final String destinationName, final String connectorType)
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException, NamingException {
+        if (jmsTemplate == null) {
+            IConnector connector = (IConnector) Class.forName(connectorType).newInstance();
+            jmsTemplate = connector.connect(username, password, url, connectionFactoryName, destinationName);
+            jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
+        }
+        return jmsTemplate;
     }
 
     void publishText(final JmsTemplate jmsTemplate, final String payload, final String[] headers, final String[] values, final int iterations) {
@@ -199,29 +211,32 @@ public class Publisher {
             @SuppressWarnings("unchecked")
             Future<Object> future = (Future<Object>) THREAD.submit(jobName, new Runnable() {
                 public void run() {
-                    logger.debug("Sending message : {}, {}, {} ", new Object[]{payload, headers, values});
+                    logger.info("Sending message : {}, {}, {} ", new Object[]{headers, values, jmsTemplate.getDefaultDestination()});
+                    // logger.info("Payload : {} ", new Object[]{payload});
                     MessageCreator messageCreator = getMessageCreator(payload, headers, values);
                     jmsTemplate.send(messageCreator);
                 }
             });
             futures.add(future);
             if (futures.size() >= MAX_THREADS) {
-                THREAD.waitForFutures(futures, 60);
+                THREAD.waitForFutures(futures, 60 * 60 * 24);
             }
         }
-        THREAD.waitForFutures(futures, 60);
+        THREAD.waitForFutures(futures, 60 * 60 * 24);
         THREAD.destroy(jobName);
+        logger.info("Done : ");
     }
 
     MessageCreator getMessageCreator(final String payload, final String[] headers, final String[] values) {
         return new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
-                TextMessage textMessage = session.createTextMessage(payload);
+                session.createObjectMessage(payload);
+                Message message = session.createTextMessage(payload);
                 for (int i = 0; i < headers.length; i++) {
-                    textMessage.setObjectProperty(headers[i], values[i]);
+                    message.setObjectProperty(headers[i], values[i]);
                 }
-                return textMessage;
+                return message;
             }
         };
     }

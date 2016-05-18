@@ -5,8 +5,42 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="IkubePersistenceUnitDb2" value="99ea3edc-4886-4a2a-a70e-495d4c9e4c6e" />
+          <factory-entry name="IkubePersistenceUnitH2" value="fff03c5d-e729-4cd0-8163-acfd80c11eb6" />
+          <factory-entry name="IkubePersistenceUnitOracle" value="5b555ab6-164d-46fb-9816-b0a8e611b61e" />
+          <factory-entry name="IkubePersistenceUnitPostgres" value="8993ce11-6efb-48b8-98ed-bd7f04f61afd" />
+        </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
+      </configuration>
+    </facet>
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/ikube/common/spring-grid-gain.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-rules.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-application.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-users.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/twitter/spring-twitter.xml</file>
+          <file>file://$MODULE_DIR$/ikube/spring.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-h2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-beans.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-aop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-hazelcast.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-system.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-geo.xml</file>
+          <file>file://$MODULE_DIR$/ikube/analytics/spring-analytics.xml</file>
+          <file>file://$MODULE_DIR$/ikube/application/spring-collector.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-geoname-csv.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-client.xml</file>
+          <file>file://$MODULE_DIR$/ikube/common/spring-actions.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/integration/spring-custom.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-desktop.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-oracle-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-ikube.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-db2-jdbc.xml</file>
+          <file>file://$MODULE_DIR$/ikube/indexes/production/spring-auto.xml</file>
+        </fileset>
       </configuration>
     </facet>
   </component>
