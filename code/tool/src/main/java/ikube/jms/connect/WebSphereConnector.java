@@ -1,12 +1,12 @@
 package ikube.jms.connect;
 
+import com.ibm.websphere.naming.WsnInitialContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
 import org.springframework.jms.core.JmsTemplate;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
+import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -41,10 +41,21 @@ public class WebSphereConnector implements IConnector {
         Destination defaultDestination = (Destination) initialContext.lookup(destinationJndiName);
         logger.info("Destination : {}", defaultDestination);
 
+
         UserCredentialsConnectionFactoryAdapter connectionFactoryAdapter = new UserCredentialsConnectionFactoryAdapter();
         connectionFactoryAdapter.setTargetConnectionFactory(connectionFactory);
         connectionFactoryAdapter.setUsername(userid);
         connectionFactoryAdapter.setPassword(password);
+
+        /*try {
+            Connection connection = connectionFactoryAdapter.createConnection();
+            connection.start();
+            Session session = connection.createSession(Boolean.FALSE, Session.AUTO_ACKNOWLEDGE);
+            Message message = session.createMessage();
+            System.out.println(message);
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }*/
 
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactoryAdapter);
         jmsTemplate.setDefaultDestination(defaultDestination);
@@ -63,7 +74,7 @@ public class WebSphereConnector implements IConnector {
         properties.put(Context.PROVIDER_URL, url);
         properties.put(Context.SECURITY_PRINCIPAL, userid);
         properties.put(Context.SECURITY_CREDENTIALS, password);
-        properties.put(Context.INITIAL_CONTEXT_FACTORY, "com.ibm.websphere.naming.WsnInitialContextFactory");
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, WsnInitialContextFactory.class.getName());
         logger.debug("Connection properties : url : {}, userid : {}", url, userid);
         return new InitialContext(properties);
     }

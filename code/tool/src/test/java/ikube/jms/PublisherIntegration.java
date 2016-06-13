@@ -30,7 +30,7 @@ public class PublisherIntegration extends AbstractIntegration {
     private String headerValues = "Nedbank:Nedbank:EC_ACH_MDT_TT1_INIT";
 
     @Test
-    @Ignore
+    // @Ignore
     public void publishRemoteWas() throws Exception {
         File pain_9 = FILE.findFileRecursively(new File("."), "pain-9-from-ach-on-us-tt1.xml");
 

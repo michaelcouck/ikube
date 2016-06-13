@@ -44,6 +44,7 @@ import java.io.IOException;
  *      NOTE: This works:
  *      http://ichart.finance.yahoo.com/table.csv?s=GOOG
  *      http://ichart.finance.yahoo.com/table.csv?s=INDO.PA
+ *      http://ichart.finance.yahoo.com/table.csv?s=NDXEX.GR
  *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2005&d=0&e=31&f=2015&g=w&ignore=.csv
  *      http://ichart.yahoo.com/table.csv?s=BAS.DE&a=0&b=1&c=2000&d=0&e=31&f=2010&g=w
  *      http://ichart.yahoo.com/table.csv?s=INDO.PA&a=0&b=1&c=2010&d=0&e=31&f=2015&g=w

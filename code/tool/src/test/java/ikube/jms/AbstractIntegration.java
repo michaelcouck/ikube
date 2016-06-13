@@ -14,7 +14,7 @@ public abstract class AbstractIntegration extends AbstractTest {
 
     protected String userid = "admin"; // admin, qcfuser
     protected String password = "password"; // password, qcfuser
-    protected String url = "iiop://192.168.1.16:2809";
+    protected String url = "iiop://be-qa-cobaxt-02.clear2pay.com:2809";
     protected String connectionFactory = "cell/nodes/app1/servers/OPFClusterApp1/jms/QCF";
     protected String destinationPrefix = "cell/nodes/app1/servers/OPFClusterApp1/jms/";
     protected String queueSuffix = "_OPFCluster";
