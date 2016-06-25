@@ -17,11 +17,12 @@ import static ikube.toolkit.THREAD.submit;
 import static ikube.toolkit.THREAD.waitForFutures;
 
 /**
- * This class can be used as a test bean to see if udp is supported on a network. The class will start a client and a server that will then
- * talk to each other over multi casted udp. If there are any other instantiations on the network then they will also be involved in the
- * 'communication' and there will be logging between each of the instances on the machines.
+ * This class can be used as a test bean to see if udp is supported on a network. The class will start a client and a
+ * server that will then talk to each other over multi casted udp. If there are any other instantiations on the network
+ * then they will also be involved in the 'communication' and there will be logging between each of the instances on
+ * the machines.
  * <p/>
- * If only on one machine then the client and server only talk to each other, sweet no?
+ * If only on one machine then the client and server only talk to each other.
  *
  * @author Michael Couck
  * @version 01.00
@@ -69,12 +70,13 @@ public class UdpBroadcaster {
         return submit(this.getClass().getSimpleName(), new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
-                try (MulticastSocket multicastSocket = new MulticastSocket(PORT)) {
+                try (final MulticastSocket multicastSocket = new MulticastSocket(PORT)) {
                     multicastSocket.joinGroup(GROUP);
                     while (true) {
                         byte[] receiveData = new byte[256];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         multicastSocket.receive(receivePacket);
+                        receivePacket.getAddress();
                         UdpBroadcaster.MESSAGES_RECIEVED++;
                         LOGGER.warn("Client received at : " + new Date() + ", from : " + receivePacket.getAddress());
                     }
@@ -89,7 +91,7 @@ public class UdpBroadcaster {
         return submit(this.getClass().getSimpleName(), new Runnable() {
             @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
-                try (DatagramSocket serverSocket = new DatagramSocket()) {
+                try (final DatagramSocket serverSocket = new DatagramSocket()) {
                     while (true) {
                         byte[] sendData = new byte[256];
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, GROUP, PORT);
