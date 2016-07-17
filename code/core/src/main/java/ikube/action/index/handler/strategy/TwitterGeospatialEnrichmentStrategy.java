@@ -197,7 +197,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         String searchString = STRING.stripToAlphaNumeric(location);
         String[] searchStrings = new String[]{searchString};
         String[] searchFields = new String[]{searchField};
-        ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL, searchStrings,
+        ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL_CSV, searchStrings,
                 searchFields, Boolean.FALSE, 0, 10);
 
         if (results != null && results.size() > 1) {

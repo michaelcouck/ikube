@@ -58,6 +58,7 @@ public class StrategyInterceptor implements IStrategyInterceptor {
                         try {
                             mustProcess.set(strategy.aroundProcess(indexContext, indexable, document, resource));
                         } catch (final Exception e) {
+                            LOGGER.error("Strategy exception : " + strategy.getClass().getName(), e);
                             throw new RuntimeException(e);
                         }
                         if (!mustProcess.get()) {

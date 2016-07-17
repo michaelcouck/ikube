@@ -1126,6 +1126,23 @@
                             <!--<url>${artifactory}</url>-->
                         <!--</configuration>-->
                     <!--</execution>-->
+                    <!--<execution>
+                        <id>java-2-html</id>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <phase>${phase}</phase>
+                        <configuration>
+                            <groupId>java2html</groupId>
+                            <artifactId>java2html</artifactId>
+                            <version>5.0.0</version>
+                            <file>tools/miscellaneous/java2html-5.0.0.jar</file>
+                            <packaging>${packaging}</packaging>
+                            <generatePom>${generate-pom}</generatePom>
+                            <repositoryId>${repository-id}</repositoryId>
+                            <url>${artifactory}</url>
+                        </configuration>
+                    </execution>-->
 
                 </executions>
             </plugin>

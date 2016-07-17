@@ -16,7 +16,7 @@
 			class="ikube.model.IndexContext"
 
 			property:name="myIndex"
-			property:maxAge="600"
+			property:maxAge="6000"
 			property:compoundFile="true"
 			property:bufferedDocs="100"
 			property:bufferSize="32"

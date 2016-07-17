@@ -2,47 +2,49 @@
 
 <!--suppress ALL -->
 <beans
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.springframework.org/schema/beans"
-    xmlns:property="http://www.springframework.org/schema/p"
-    xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:property="http://www.springframework.org/schema/p"
+        xmlns:util="http://www.springframework.org/schema/util"
 
-    xsi:schemaLocation="
+        xsi:schemaLocation="
             http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean
-        name="twitter"
-        class="ikube.model.IndexContext"
-        property:name="twitter"
-        property:maxAge="0"
-        property:compoundFile="true"
-        property:bufferedDocs="100"
-        property:bufferSize="128"
-        property:mergeFactor="100"
-        property:batchSize="${jdbc.batch.size}"
-        property:internetBatchSize="${internet.batch.size}"
-        property:maxFieldLength="${max.field.length}"
-        property:maxReadLength="${max.read.length}"
-        property:analyzer-ref="twitter-analyzer"
-        property:address="false"
-        property:throttle="0"
-        property:delta="true"
-        property:indexDirectoryPath="${index.directory.path}"
-        property:indexDirectoryPathBackup="${index.directory.path.backup}"
-        property:children-ref="twitter-indexables"
-        destroy-method="destroy"/>
+            id="twitter"
+            name="twitter"
+            class="ikube.model.IndexContext"
+            property:name="twitter"
+            property:maxAge="0"
+            property:compoundFile="true"
+            property:bufferedDocs="100"
+            property:bufferSize="128"
+            property:mergeFactor="100"
+            property:batchSize="${jdbc.batch.size}"
+            property:internetBatchSize="${internet.batch.size}"
+            property:maxFieldLength="${max.field.length}"
+            property:maxReadLength="${max.read.length}"
+            property:analyzer-ref="twitter-analyzer"
+            property:address="false"
+            property:throttle="0"
+            property:delta="true"
+            property:indexDirectoryPath="${index.directory.path}"
+            property:indexDirectoryPathBackup="${index.directory.path.backup}"
+            property:children-ref="twitter-indexables"
+            destroy-method="destroy"/>
     <util:list id="twitter-indexables">
         <ref bean="twitter-index"/>
     </util:list>
 
     <bean
-        name="twitter-analyzer"
-        class="ikube.action.index.analyzer.StemmingAnalyzer"
-        property:useStopWords="false"
-        init-method="initialize"/>
+            id="twitter-analyzer"
+            name="twitter-analyzer"
+            class="ikube.action.index.analyzer.StemmingAnalyzer"
+            property:useStopWords="false"
+            init-method="initialize"/>
 
     <!-- Request token url : https://api.twitter.com/oauth/request_token
     Authorize url : https://api.twitter.com/oauth/authorize
@@ -60,38 +62,39 @@
     -->
 
     <bean
-        name="twitter-index"
-        class="ikube.model.IndexableTweets"
-        property:name="twitter-index"
-        property:address="false"
-        property:maxExceptions="1000"
+            id="twitter-index"
+            name="twitter-index"
+            class="ikube.model.IndexableTweets"
+            property:name="twitter-index"
+            property:address="false"
+            property:maxExceptions="1000"
 
-        property:analyzed="true"
-        property:stored="true"
-        property:tokenized="true"
-        property:vectored="false"
-        property:omitNorms="true"
+            property:analyzed="true"
+            property:stored="true"
+            property:tokenized="true"
+            property:vectored="false"
+            property:omitNorms="true"
 
-        property:threads="6"
+            property:threads="1"
 
-        property:consumerKey="${consumer-key}"
-        property:consumerSecret="${consumer-secret}"
-        property:token="${token}"
-        property:tokenSecret="${token-secret}"
+            property:consumerKey="${consumer-key}"
+            property:consumerSecret="${consumer-secret}"
+            property:token="${token}"
+            property:tokenSecret="${token-secret}"
 
-        property:textField="contents"
-        property:createdAtField="created-at"
-        property:fromUserField="from-user"
-        property:locationField="location"
-        property:userLocationField="userLocation"
-        property:userNameField="userName"
-        property:userScreenNameField="userScreenName"
-        property:userTimeZoneField="userTimeZone"
-        property:userUtcOffsetField="userUtcOffset"
-        property:userLanguageField="userLanguage"
-        property:clones="0"
+            property:textField="contents"
+            property:createdAtField="created-at"
+            property:fromUserField="from-user"
+            property:locationField="location"
+            property:userLocationField="userLocation"
+            property:userNameField="userName"
+            property:userScreenNameField="userScreenName"
+            property:userTimeZoneField="userTimeZone"
+            property:userUtcOffsetField="userUtcOffset"
+            property:userLanguageField="userLanguage"
+            property:clones="0"
 
-        property:strategies-ref="twitter-strategies"/>
+            property:strategies-ref="twitter-strategies"/>
     <util:list id="twitter-strategies">
         <ref bean="ikube.action.index.handler.strategy.EmoticonClassificationStrategy"/>
         <ref bean="ikube.action.index.handler.strategy.LanguageFilterStrategy"/>
@@ -106,25 +109,47 @@
     </util:list>
 
     <bean
-        id="twitter-classification-strategy"
-        class="ikube.action.index.handler.strategy.AnalysisStrategy"
-        property:context-ref="sentiment-smo-twitter"
-        init-method="initialize"/>
+            id="twitter-classification-strategy"
+            name="twitter-classification-strategy"
+            class="ikube.action.index.handler.strategy.AnalysisStrategy"
+            property:context-ref="sentiment-smo-twitter"
+            init-method="initialize"/>
 
     <bean
-        id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
-        init-method="initialize"
-        depends-on="ikube.toolkit.DataManager"
-        lazy-init="true"/>
+            id="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+            name="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+            class="ikube.action.index.handler.strategy.TwitterGeospatialEnrichmentStrategy"
+            init-method="initialize"
+            depends-on="ikube.toolkit.DataManager"
+            lazy-init="true"/>
 
+    <bean
+            id="analyzer-twitter-naive-bays"
+            name="analyzer-twitter-naive-bays"
+            class="ikube.analytics.weka.WekaClassifier"/>
     <!-- These are the language classifiers, they are trained by the Twitter data -->
     <bean
-        name="sentiment-smo-twitter"
-        class="ikube.model.Context"
-        property:name="sentiment-smo-twitter"
-        property:analyzer="ikube.analytics.weka.WekaClassifier">
+            id="sentiment-smo-twitter"
+            name="sentiment-smo-twitter"
+            class="ikube.model.Context"
+            property:name="sentiment-smo-twitter"
+            property:analyzer-ref="analyzer-twitter-naive-bays">
+        <property name="filters">
+            <list>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
+            </list>
+        </property>
         <property name="algorithms">
             <list>
                 <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
@@ -157,22 +182,6 @@
                 <value>sentiment-ru.arff</value><!-- Russian -->
             </list>
         </property>
-        <property name="filters">
-            <list>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-                <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
-            </list>
-        </property>
         <property name="maxTrainings">
             <list>
                 <value>${max-training}</value>
@@ -188,6 +197,23 @@
                 <value>${max-training}</value>
                 <value>${max-training}</value>
             </list>
+        </property>
+    </bean>
+
+    <bean
+            id="ikube.analytics.AnalyzerManager"
+            name="ikube.analytics.AnalyzerManager"
+            class="ikube.analytics.AnalyzerManager" />
+
+    <bean
+            class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+            property:targetClass="ikube.analytics.AnalyzerManager"
+            property:targetMethod="buildAnalyzer"
+            property:targetObject-ref="ikube.analytics.AnalyzerManager">
+        <property name="arguments">
+            <array>
+                <ref local="sentiment-smo-twitter" />
+            </array>
         </property>
     </bean>
 

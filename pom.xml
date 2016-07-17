@@ -175,9 +175,6 @@
                                     <copy todir="ikube/indexes/twitter">
                                         <fileset dir="../libs/src/main/resources/indexes/twitter" includes="**"/>
                                     </copy>
-                                    <!--<copy todir="experimental">
-                                        <fileset dir="../libs/src/main/resources/experimental" includes="**"/>
-                                    </copy>-->
                                 </target>
                             </configuration>
                             <goals>
@@ -243,8 +240,7 @@
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
-                    <!-- -javaagent:${project.parent.basedir}/serenity/serenity.jar-->
-                    <argLine>${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
+                    <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
                 </configuration>
             </plugin>
             <!-- This plugin runs the integration tests. -->
@@ -571,40 +567,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.poi</groupId>-->
-            <!--<artifactId>poi</artifactId>-->
-            <!--<version>3.11</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>compile</scope>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>commons-logging</artifactId>-->
-                    <!--<groupId>commons-logging</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>log4j</groupId>-->
-                    <!--<artifactId>log4j</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.poi</groupId>-->
-            <!--<artifactId>poi-scratchpad</artifactId>-->
-            <!--<version>3.11</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>compile</scope>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>commons-logging</artifactId>-->
-                    <!--<groupId>commons-logging</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>log4j</groupId>-->
-                    <!--<artifactId>log4j</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>concurrent</groupId>
             <artifactId>concurrent</artifactId>
@@ -813,13 +775,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.pdfbox</groupId>-->
-            <!--<artifactId>pdfbox</artifactId>-->
-            <!--<version>1.3.1</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>bouncycastle</groupId>
             <artifactId>bcmail-jdk16</artifactId>
@@ -890,13 +845,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.h2database</groupId>-->
-            <!--<artifactId>h2</artifactId>-->
-            <!--&lt;!&ndash;<version>1.3.176</version>&ndash;&gt;-->
-            <!--<version>1.4.182</version>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
@@ -960,10 +908,6 @@
                     <groupId>org.apache.tika</groupId>
                     <artifactId>tika-parsers</artifactId>
                 </exclusion>
-                <!--<exclusion>-->
-                    <!--<groupId>com.h2database</groupId>-->
-                    <!--<artifactId>h2</artifactId>-->
-                <!--</exclusion>-->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
@@ -992,10 +936,6 @@
                     <groupId>org.apache.tika</groupId>
                     <artifactId>tika-parsers</artifactId>
                 </exclusion>
-                <!--<exclusion>-->
-                    <!--<groupId>com.h2database</groupId>-->
-                    <!--<artifactId>h2</artifactId>-->
-                <!--</exclusion>-->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
