@@ -8,6 +8,7 @@ import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.STRING;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
@@ -26,20 +27,18 @@ public class RowResourceHandler extends ResourceHandler<IndexableFileSystemCsv> 
      * {@inheritDoc}
      */
     @Override
-    public Document handleResource(final IndexContext indexContext, final IndexableFileSystemCsv indexableFileSystemCsv, final Document document, final Object resource)
-            throws Exception {
-        // countryCityFile, lineNumber, lineNumberFieldName
-        String fileName = indexableFileSystemCsv.getFile().getName();
+    public Document handleResource(final IndexContext indexContext, final IndexableFileSystemCsv indexableFileSystemCsv,
+                                   final Document document, final Object resource) throws Exception {
+        @SuppressWarnings("unchecked")
+        List<IndexableColumn> indexableColumns = (List<IndexableColumn>) resource;
+
+        String fileName = FilenameUtils.getName(indexableFileSystemCsv.getPath());
         int lineNumber = indexableFileSystemCsv.getLineNumber();
         String lineNumberFieldName = indexableFileSystemCsv.getLineNumberFieldName();
-        List<Indexable> indexableColumns = indexableFileSystemCsv.getChildren();
         String identifier = StringUtils.join(new Object[]{fileName, Integer.toString(lineNumber)}, IConstants.SPACE);
         // Add the line number field
         IndexManager.addStringField(lineNumberFieldName, identifier, indexableFileSystemCsv, document);
-        for (Indexable indexable : indexableColumns) {
-            if (!IndexableColumn.class.isAssignableFrom(indexable.getClass())) {
-                continue;
-            }
+        for (final Indexable indexable : indexableColumns) {
             IndexableColumn indexableColumn = (IndexableColumn) indexable;
             String fieldName = indexableColumn.getFieldName();
             String fieldValue = (String) indexableColumn.getContent();

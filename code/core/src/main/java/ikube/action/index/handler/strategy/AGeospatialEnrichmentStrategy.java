@@ -36,7 +36,7 @@ import java.util.Map;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
 
-    protected static Map<Long, GeoCity> GEO_CITY = new HashMap<>();
+    static Map<Long, GeoCity> GEO_CITY = new HashMap<>();
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -51,8 +51,8 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
     @Autowired
     private IDataBase dataBase;
 
-    SpatialContext spatialContext;
-    SpatialStrategy spatialStrategy;
+    private SpatialContext spatialContext;
+    private SpatialStrategy spatialStrategy;
 
     public AGeospatialEnrichmentStrategy() {
         this(null);
@@ -67,10 +67,8 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         // Note to self: This takes an x and y co-ordinate so the
         // order must be longitude(x) and latitude(y), not the other way
         Shape shape = spatialContext.makePoint(coordinate.getLongitude(), coordinate.getLatitude());
-        for (IndexableField indexableField : spatialStrategy.createIndexableFields(shape)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Adding spatial field : " + indexableField);
-            }
+        for (final IndexableField indexableField : spatialStrategy.createIndexableFields(shape)) {
+            logger.info("Adding spatial field : " + indexableField);
             document.add(indexableField);
         }
         // Store this field any way

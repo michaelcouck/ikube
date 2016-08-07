@@ -167,7 +167,8 @@ public final class IndexManager {
             {
                 this.maxMergeDocs = indexContext.getBufferedDocs();
                 this.maxMergeSize = (long) indexContext.getBufferSize();
-                // this.useCompoundFile = indexContext.isCompoundFile();
+                this.setNoCFSRatio(1);
+                this.setMaxCFSSegmentSizeMB(Short.MAX_VALUE);
                 this.mergeFactor = indexContext.getMergeFactor();
             }
         };

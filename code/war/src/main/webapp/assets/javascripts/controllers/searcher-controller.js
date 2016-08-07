@@ -366,11 +366,11 @@ module.controller('SearcherController', function($scope, $http, $timeout, $log) 
 			});
 		}
 		// And finally set the waypoints
-		$scope.doWaypoints(origin);
+		$scope.doWaypoints(origin, map);
 	};
 
 	// This function will put the way points on the map
-	$scope.doWaypoints = function(origin) {
+	$scope.doWaypoints = function(origin, map) {
 		var waypoints = [];
 		var destination = origin;
 		var maxWaypoints = 8;

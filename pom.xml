@@ -143,7 +143,7 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>test-compile</phase>
+                            <phase>site</phase>
                             <configuration>
                                 <target>
                                     <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
@@ -240,7 +240,7 @@
                     <forkMode>once</forkMode>
                     <testFailureIgnore>true</testFailureIgnore>
                     <!--suppress MavenModelInspection -->
-                    <argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>
+                    <!--<argLine>-javaagent:${project.parent.basedir}/serenity/serenity.jar ${headless-parameters} ${serenity-parameters} ${memory-parameters}</argLine>-->
                 </configuration>
             </plugin>
             <!-- This plugin runs the integration tests. -->

@@ -1,54 +1,120 @@
 package ikube.action.index.handler.filesystem;
 
+import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
+import ikube.model.Indexable;
+import ikube.model.IndexableColumn;
+import ikube.model.IndexableFileSystemCsv;
+import ikube.toolkit.SERIALIZATION;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 /**
- * Provides the files for the csv handler, i.e. all the csv files in the path. Not this provider will
- * not walk the file system, but only look in the top level folder for files.
+ * TODO: Document me...
  *
  * @author Michael Couck
- * @version 01.00
+ * @version 02.00
  * @since 08-02-2011
  */
-public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
+class FileSystemCsvResourceProvider implements IResourceProvider<List<IndexableColumn>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemCsvResourceProvider.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private List<File> resources;
+    private int lineNumber = 0;
     private boolean terminated;
+    private LineIterator lineIterator;
+    private IndexableFileSystemCsv indexableFileSystemCsv;
+    private Stack<List<IndexableColumn>> resources = new Stack<>();
+    private Stack<List<IndexableColumn>> used_resources = new Stack<>();
 
-    FileSystemCsvResourceProvider(final String filePath) {
-        LOGGER.info("Csv start path : " + filePath);
-        File[] files = new File(filePath).listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                boolean included = isIncluded(pathname);
-                LOGGER.info("Included : " + included + ", " + pathname);
-                return included;
-            }
-        });
-        if (files != null) {
-            setResources(new ArrayList<>(Arrays.asList(files)));
+    FileSystemCsvResourceProvider(final IndexableFileSystemCsv indexableFileSystemCsv) throws IOException {
+        this.indexableFileSystemCsv = indexableFileSystemCsv;
+
+        File file = new File(indexableFileSystemCsv.getPath());
+        indexableFileSystemCsv.setFile(file);
+        String encoding = indexableFileSystemCsv.getEncoding() != null ? indexableFileSystemCsv.getEncoding() : IConstants.ENCODING;
+        logger.info("Using encoding for file : " + encoding + ", " + file);
+        lineIterator = FileUtils.lineIterator(file, encoding);
+
+        // The first line is the header, i.e. the columns of the file
+        String separator = indexableFileSystemCsv.getSeparator();
+        String headerLine = lineIterator.nextLine();
+        String[] columns = StringUtils.splitPreserveAllTokens(headerLine, separator);
+        // Trim any space on the column headers
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = columns[i].trim();
         }
+
+        List<Indexable> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+        indexableFileSystemCsv.setChildren(indexableColumns);
+        logger.info("Doing columns : " + indexableColumns.size());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized File getResource() {
-        if (resources == null || resources.isEmpty()) {
-            return null;
+    public synchronized List<IndexableColumn> getResource() {
+        if (resources.size() < 10) {
+            replenishResources();
         }
-        return resources.remove(0);
+        notifyAll();
+        return this.resources.size() > 0 ? this.resources.pop() : null;
+    }
+
+    private synchronized void replenishResources() {
+        logger.warn("Replenish resources : line number : " + lineNumber +
+                ", max lines : " + indexableFileSystemCsv.getMaxLines() +
+                ", terminated : " + isTerminated() +
+                ", has next : " + lineIterator.hasNext() +
+                ", resources size : " + resources.size());
+        if (lineNumber < indexableFileSystemCsv.getMaxLines() && !isTerminated()) {
+            while (lineIterator.hasNext() && resources.size() < 1000) {
+                String line = lineIterator.nextLine();
+                String[] values = StringUtils.splitPreserveAllTokens(line, indexableFileSystemCsv.getSeparator());
+                List<IndexableColumn> indexableColumns;
+                if (this.used_resources.size() > 0) {
+                    indexableColumns = used_resources.pop();
+                } else {
+                    indexableColumns = new ArrayList<>();
+                    for (final Indexable indexable : indexableFileSystemCsv.getChildren()) {
+                        IndexableColumn indexableColumn = (IndexableColumn) SERIALIZATION.clone(indexable);
+                        indexableColumns.add(indexableColumn);
+                    }
+                }
+
+                for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
+                    IndexableColumn indexableColumn = indexableColumns.get(i);
+                    indexableColumn.setContent(values[i]);
+                }
+
+                ++lineNumber;
+                if (lineNumber % 10000 == 0) {
+                    logger.info("Lines done : " + lineNumber);
+                }
+
+                indexableFileSystemCsv.setLineNumber(lineNumber);
+                resources.push(indexableColumns);
+            }
+        }
+    }
+
+    @Override
+    public void setResources(final List<List<IndexableColumn>> resources) {
+        if (resources != null) {
+            for (final List<IndexableColumn> indexableColumns : resources) {
+                this.used_resources.push(indexableColumns);
+            }
+        }
     }
 
     /**
@@ -67,15 +133,46 @@ public class FileSystemCsvResourceProvider implements IResourceProvider<File> {
         this.terminated = terminated;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setResources(final List<File> resources) {
-        this.resources = resources;
+    List<Indexable> getIndexableColumns(final IndexableFileSystemCsv indexable, final String[] columns) {
+        List<Indexable> indexableColumns = indexable.getChildren();
+        if (indexableColumns == null) {
+            indexableColumns = new ArrayList<>();
+            indexable.setChildren(indexableColumns);
+        }
+        if (!indexable.isAllColumns()) {
+            return indexable.getChildren();
+        }
+        List<Indexable> sortedIndexableColumns = new ArrayList<>();
+        // Add all the columns that are not present in the configuration
+        for (final String columnName : columns) {
+            IndexableColumn indexableColumn = null;
+            for (final Indexable child : indexableColumns) {
+                if (((IndexableColumn) child).getFieldName().equals(columnName)) {
+                    indexableColumn = (IndexableColumn) child;
+                    break;
+                }
+            }
+            if (indexableColumn == null) {
+                // Add the column to the list
+                indexableColumn = new IndexableColumn();
+                indexableColumn.setParent(indexable);
+                indexableColumn.setName(columnName);
+                indexableColumn.setFieldName(columnName);
+
+                indexableColumn.setStored(Boolean.TRUE);
+                indexableColumn.setAnalyzed(Boolean.TRUE);
+
+                indexableColumn.setAddress(Boolean.FALSE);
+                indexableColumn.setNumeric(Boolean.FALSE);
+                indexableColumn.setIdColumn(Boolean.FALSE);
+                indexableColumn.setVectored(Boolean.FALSE);
+                indexableColumn.setTokenized(Boolean.FALSE);
+
+                indexableColumn.setStrategies(indexable.getStrategies());
+            }
+            sortedIndexableColumns.add(indexableColumn);
+        }
+        return sortedIndexableColumns;
     }
 
-    protected synchronized boolean isIncluded(final File file) {
-        return file.getName().endsWith("csv");
-    }
 }

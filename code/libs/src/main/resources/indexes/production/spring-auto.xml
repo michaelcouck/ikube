@@ -22,7 +22,7 @@
         id="autocomplete"
         class="ikube.model.IndexContext"
         property:name="autocomplete"
-        property:maxAge="600"
+        property:maxAge="60000"
         property:compoundFile="${compound.file}"
         property:bufferedDocs="${buffered.docs}"
         property:bufferSize="${buffer.size}"

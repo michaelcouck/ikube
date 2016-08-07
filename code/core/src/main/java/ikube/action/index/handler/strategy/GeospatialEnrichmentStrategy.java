@@ -89,6 +89,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
                 coordinate = geocoder.getCoordinate(address);
             }
         }
+        logger.info("Coordinate : " + coordinate);
         return coordinate;
     }
 
@@ -103,7 +104,7 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
             }
         }
         if (indexable.getChildren() != null) {
-            for (Indexable child : indexable.getChildren()) {
+            for (final Indexable child : indexable.getChildren()) {
                 buildAddress(child, builder);
             }
         }
@@ -119,7 +120,6 @@ public final class GeospatialEnrichmentStrategy extends AGeospatialEnrichmentStr
         latPattern = Pattern.compile(builder.toString());
 
         builder = new StringBuilder();
-
         builder.append(".*(");
         builder.append(IConstants.LONGITUDE);
         builder.append(").*");
