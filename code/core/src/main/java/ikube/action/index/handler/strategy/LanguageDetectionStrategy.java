@@ -50,7 +50,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 		return super.aroundProcess(indexContext, indexable, document, resource);
 	}
 
-	void detectLanguage(final Indexable indexable, final Document document, final String content) {
+	private void detectLanguage(final Indexable indexable, final Document document, final String content) {
 		if (!StringUtils.isEmpty(content)) {
 			try {
 				String language;
@@ -105,7 +105,7 @@ public final class LanguageDetectionStrategy extends AStrategy {
 			File dotDirectory = new File(".");
 			do {
 				logger.info("Dot directory : " + dotDirectory.getAbsolutePath());
-				profileDirectory = FILE.findDirectoryRecursively(dotDirectory, new String[] {IConstants.LANGUAGE_PROFILES_DIRECTORY});
+				profileDirectory = FILE.findDirectoryRecursively(dotDirectory, IConstants.LANGUAGE_PROFILES_DIRECTORY);
 				dotDirectory = FILE.moveUpDirectories(dotDirectory, 1);
 			} while (upDirectories-- > 0 && (profileDirectory == null || !profileDirectory.exists()));
 			try {

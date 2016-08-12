@@ -45,7 +45,7 @@
         id="autocomplete-lists"
         class="ikube.model.IndexableFileSystemCsv"
         property:name="autocomplete-lists"
-        property:path="./ikube/common/languages"
+        property:path="./ikube/common/languages/english.csv"
 
         property:separator=","
         property:encoding="UTF-8"

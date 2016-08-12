@@ -4,7 +4,7 @@
 	<groupId>ikube</groupId>
 	<artifactId>ikube-site</artifactId>
 	<packaging>war</packaging>
-    <version>5.3.0</version>
+    <version>5.3.1</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>

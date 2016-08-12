@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ikube.action.index.IndexManager.addNumericField;
 import static ikube.action.index.IndexManager.addStringField;
@@ -39,7 +40,13 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
 
     @Value("${max-geohash-levels-twitter}")
     int maxGeohashLevels = IConstants.MAX_GEOHASH_LEVELS;
+
+    private AtomicInteger userProfileCoordinates = new AtomicInteger();
+    private AtomicInteger languageTimezoneCoordinates = new AtomicInteger();
+    private AtomicInteger searchCoordinates = new AtomicInteger();
+
     @Autowired
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     private ISearcherService searcherService;
 
     public TwitterGeospatialEnrichmentStrategy() {
@@ -54,7 +61,8 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document, final Object resource) throws Exception {
+    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
+                                 final Object resource) throws Exception {
         if (IndexableTweets.class.isAssignableFrom(indexable.getClass()) &&
                 resource != null && Tweet.class.isAssignableFrom(resource.getClass())) {
             IndexableTweets indexableTweets = (IndexableTweets) indexable;
@@ -66,32 +74,40 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         return super.aroundProcess(indexContext, indexable, document, resource);
     }
 
-    void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile, final Document document) {
-        String locationField = indexableTweets.getLocationField();
-        Coordinate userProfileLocation = getLocationFromUserProfile(twitterProfile);
-        Coordinate tweetLocation = null;
+    private void setCoordinate(final IndexableTweets indexableTweets, final TwitterProfile twitterProfile, final Document document) {
+        // The user doesn't fill in the location properly but the site automatically
+        // chooses a time zone for the ip address, adding this to the language and cross
+        // referencing with the language seems to be quite accurate
+        Coordinate tweetLocation = getLocationFromUserProfile(twitterProfile);
 
-        if (userProfileLocation != null) {
-            // The user doesn't fill in the location properly but the site automatically
-            // chooses a time zone for the ip address, adding this to the language and cross
-            // referencing with the language seems to be quite accurate
-            logger.debug("User profile location : {} ", userProfileLocation);
-            tweetLocation = userProfileLocation;
-        } else {
-            Coordinate languageTimeZoneCoordinate = getLocationFromLanguageAndTimeZone(document, twitterProfile);
-            if (languageTimeZoneCoordinate != null) {
-                // This is a fall back, and could be any one of the countries that have that language
-                // as a primary language for the time zone, we can't be sure, but it si better than nothing
-                // at least we get the time zone, i.e. longitude correct
-                logger.debug("Language time zone location : {} ", languageTimeZoneCoordinate);
-                tweetLocation = languageTimeZoneCoordinate;
-            }
+        // Get the location based on the user input, expensive!
+        // Coordinate userLocationCoordinate = searchForLocationCoordinates(twitterProfile.getLocation(), IConstants.NAME);
+
+        if (tweetLocation == null) {
+            // This is a fall back, and could be any one of the countries that have that language
+            // as a primary language for the time zone, we can't be sure, but it is better than nothing
+            // at least we get the time zone, i.e. longitude correct
+            tweetLocation = getLocationFromLanguageAndTimeZone(document, twitterProfile);
         }
+
+        //noinspection StatementWithEmptyBody
+        if (tweetLocation == null) {
+            // Too expensive!!
+            // tweetLocation = searchForLocationCoordinates(twitterProfile.getLocation(), IConstants.NAME);
+        }
+
         if (tweetLocation != null) {
-            addStringField(locationField, tweetLocation.getName(), indexableTweets, document);
+            addStringField(indexableTweets.getLocationField(), tweetLocation.getName(), indexableTweets, document);
             addNumericField(IConstants.LATITUDE, Double.toString(tweetLocation.getLatitude()), document, Boolean.TRUE, indexableTweets.getBoost());
             addNumericField(IConstants.LONGITUDE, Double.toString(tweetLocation.getLongitude()), document, Boolean.TRUE, indexableTweets.getBoost());
             addSpatialLocationFields(tweetLocation, document);
+
+            int totalCoordinates = userProfileCoordinates.get() + languageTimezoneCoordinates.get() + searchCoordinates.get();
+            if (totalCoordinates != 0 && totalCoordinates % 1000 == 0) {
+                logger.info("User profile coordinates : " + userProfileCoordinates.get() +
+                        ", language/timezone : " + languageTimezoneCoordinates.get() +
+                        ", search : " + searchCoordinates.get());
+            }
         }
     }
 
@@ -104,12 +120,9 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * @param twitterProfile the profile of the user, cannot be null
      * @return the co-ordinate of the tweet based on the time zone of the user, or null if not time zone can be found
      */
-    Coordinate getLocationFromUserProfile(final TwitterProfile twitterProfile) {
+    private Coordinate getLocationFromUserProfile(final TwitterProfile twitterProfile) {
         Coordinate timeZoneCoordinate = null;
-        Coordinate userLocationCoordinate = null;
         String timeZone = twitterProfile.getTimeZone();
-        String userLocation = twitterProfile.getLocation();
-
         // Get the time zone location
         if (!StringUtils.isEmpty(timeZone)) {
             // This seems to be the most accurate
@@ -119,25 +132,14 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
                 GeoCity geoCity = GEO_CITY.get(hash);
                 if (geoCity != null) {
                     timeZoneCoordinate = geoCity.getCoordinate();
+                    userProfileCoordinates.getAndIncrement();
                 }
             }
         }
-
-        // Get the location based on the user input
-        if (timeZoneCoordinate == null && !StringUtils.isEmpty(userLocation)) {
-            userLocationCoordinate = findLocationCoordinates(userLocation, IConstants.NAME);
-        }
-
-        if (timeZoneCoordinate != null) {
-            return timeZoneCoordinate;
-        } else if (userLocationCoordinate != null) {
-            return userLocationCoordinate;
-        }
-
-        return null;
+        return timeZoneCoordinate;
     }
 
-    String getCityFromTimeZone(final String timeZone) {
+    private String getCityFromTimeZone(final String timeZone) {
         String[] utcTimeZoneLocations = StringUtils.split(timeZone, '/');
         return utcTimeZoneLocations[utcTimeZoneLocations.length - 1].toLowerCase();
     }
@@ -152,7 +154,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
      * @param twitterProfile the twitter profile for the user, this can not be null
      * @return the co-ordinate of the time zone and language, but could be null, and only accurate to the longitude
      */
-    Coordinate getLocationFromLanguageAndTimeZone(final Document document, final TwitterProfile twitterProfile) {
+    private Coordinate getLocationFromLanguageAndTimeZone(final Document document, final TwitterProfile twitterProfile) {
         Coordinate coordinate = null;
         int utcOffsetSeconds = twitterProfile.getUtcOffset();
         String profileLanguage = twitterProfile.getLanguage();
@@ -184,6 +186,7 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
                 if (profileLanguageMatch || tweetLanguageMatch) {
                     logger.debug("Taking the country location from the time zone : {} ", geoCountry);
                     coordinate = geoCity.getCoordinate();
+                    languageTimezoneCoordinates.incrementAndGet();
                     break;
                 }
             }
@@ -192,18 +195,18 @@ public final class TwitterGeospatialEnrichmentStrategy extends AGeospatialEnrich
         return coordinate;
     }
 
-    Coordinate findLocationCoordinates(final String location, final String searchField) {
+    private Coordinate searchForLocationCoordinates(final String location, final String searchField) {
         // We need to clean the text for Lucene
         String searchString = STRING.stripToAlphaNumeric(location);
         String[] searchStrings = new String[]{searchString};
         String[] searchFields = new String[]{searchField};
-        ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL_CSV, searchStrings,
-                searchFields, Boolean.FALSE, 0, 10);
+        ArrayList<HashMap<String, String>> results = searcherService.search(IConstants.GEOSPATIAL_CSV, searchStrings, searchFields, Boolean.FALSE, 0, 3);
 
         if (results != null && results.size() > 1) {
             HashMap<String, String> timeZoneLocationResult = results.get(0);
             String latitude = timeZoneLocationResult.get(IConstants.LATITUDE);
             String longitude = timeZoneLocationResult.get(IConstants.LONGITUDE);
+            searchCoordinates.getAndIncrement();
             return new Coordinate(Double.parseDouble(latitude), Double.parseDouble(longitude), location);
         }
 

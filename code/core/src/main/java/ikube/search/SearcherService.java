@@ -29,6 +29,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ikube.toolkit.STRING.stripToAlphaNumeric;
 import static org.apache.commons.lang.StringUtils.stripToEmpty;
@@ -44,6 +45,8 @@ public class SearcherService implements ISearcherService {
 
     static final Logger LOGGER = LoggerFactory.getLogger(SearcherService.class);
 
+    private AtomicInteger exceptionCounter = new AtomicInteger();
+
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private IDataBase dataBase;
@@ -57,6 +60,7 @@ public class SearcherService implements ISearcherService {
      * The service to get system contexts and other bric-a-brac.
      */
     @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     private IMonitorService monitorService;
 
     /**
@@ -516,7 +520,7 @@ public class SearcherService implements ISearcherService {
      * the search object, updating the count using the {@link ikube.database.IDataBase}
      * JPA persistence manager.
      */
-    protected synchronized void persistSearch(final Search search) {
+    void persistSearch(final Search search) {
         final String indexName = search.getIndexName();
         final String[] searchStrings = search.getSearchStrings().toArray(new String[search.getSearchStrings().size()]);
         final ArrayList<HashMap<String, String>> results = search.getSearchResults();
@@ -560,7 +564,11 @@ public class SearcherService implements ISearcherService {
                 LOGGER.debug("Database search : " + dbSearch);
             }
         } catch (final Exception e) {
-            LOGGER.error("Exception setting search in database : ", e);
+            if (exceptionCounter.getAndIncrement() % 100 == 0) {
+                LOGGER.error("Exception setting search in database : ", e);
+            } else {
+                LOGGER.debug("Exception setting search in database : ", e);
+            }
         }
     }
 

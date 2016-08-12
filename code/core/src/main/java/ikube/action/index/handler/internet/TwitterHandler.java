@@ -4,6 +4,7 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.action.index.handler.IndexableHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
+import ikube.toolkit.STRING;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
@@ -23,6 +24,8 @@ import java.util.concurrent.ForkJoinTask;
  * @since 24-04-2013
  */
 public class TwitterHandler extends IndexableHandler<IndexableTweets> {
+
+    private static final char[] EXCLUSIONS = new char[0];
 
     @Autowired
     private TwitterResourceHandler twitterResourceHandler;
@@ -50,9 +53,10 @@ public class TwitterHandler extends IndexableHandler<IndexableTweets> {
         builder.append(" ");
         builder.append(tweet.getFromUser());
         builder.append(" ");
+        // Strip the punctuation, we don't need it
         builder.append(tweet.getText());
 
-        indexableTweets.setContent(builder.toString());
+        indexableTweets.setContent(STRING.stripToAlphaNumeric(builder.toString(), EXCLUSIONS));
         // And put the data in the index
         try {
             twitterResourceHandler.handleResource(indexContext, indexableTweets, new Document(), resource);

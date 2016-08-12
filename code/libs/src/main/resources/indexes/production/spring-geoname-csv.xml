@@ -59,7 +59,7 @@
             property:omitNorms="true"
             property:tokenized="true"
             property:threads="8"
-            property:allColumns="true"
+            property:allColumns="false"
 
             property:excludedPattern="none"
             property:lastModifiedFieldName="lastmodified"
@@ -94,6 +94,7 @@
             property:analyzed="true"
             property:vectored="false"
             property:numeric="false"/>
+
     <bean
             id="geoname-csv-latitude"
             class="ikube.model.IndexableColumn"
@@ -103,6 +104,7 @@
             property:numeric="true"
             property:stored="true"
             property:vectored="false"/>
+
     <bean
             id="geoname-csv-longitude"
             class="ikube.model.IndexableColumn"
@@ -112,5 +114,60 @@
             property:numeric="true"
             property:stored="true"
             property:vectored="false"/>
+
+    <!--<bean
+            id="geospatialAlternatenames"
+            class="ikube.model.IndexableColumn"
+            property:name="alternatenames"
+
+            property:fieldName="alternatenames"
+            property:address="false"
+            property:omitNorms="true"
+
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"
+            property:numeric="false"/>
+
+    <bean
+            id="geospatialPopulation"
+            class="ikube.model.IndexableColumn"
+            property:name="population"
+            property:fieldName="population"
+            property:address="false"
+            property:omitNorms="true"
+
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"
+            property:numeric="true"/>
+
+    <bean
+            id="geospatialElevation"
+            class="ikube.model.IndexableColumn"
+            property:name="elevation"
+            property:fieldName="elevation"
+
+            property:address="false"
+            property:omitNorms="true"
+
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"
+            property:numeric="true"/>
+
+    <bean
+            id="geospatialTimezone"
+            class="ikube.model.IndexableColumn"
+            property:name="timezone"
+            property:fieldName="timezone"
+
+            property:address="false"
+            property:omitNorms="true"
+
+            property:stored="true"
+            property:analyzed="true"
+            property:vectored="false"
+            property:numeric="false"/>-->
 
 </beans>

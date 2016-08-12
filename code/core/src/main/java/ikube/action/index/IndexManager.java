@@ -52,7 +52,7 @@ public final class IndexManager {
      *
      * @param indexContext the index to open the writers for
      * @return the array of index writers opened on all the index directories for the context
-     * @throws Exception
+     * @throws Exception anything happens other than out of memory
      */
     @SuppressWarnings("ConstantConditions")
     public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext indexContext) throws Exception {
@@ -139,7 +139,7 @@ public final class IndexManager {
      * @param indexDirectory the directory to open the index in
      * @param create         whether to create the index or open on an existing index
      * @return the index writer open on the specified directory
-     * @throws Exception
+     * @throws Exception caller must handle everything
      */
     public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final File indexDirectory, final boolean create)
             throws Exception {
@@ -154,7 +154,7 @@ public final class IndexManager {
      * @param directory    the directory to open the writer on, could be in memory
      * @param create       whether to create the index from scratch, i.e. deleting the original contents
      * @return the index writer on the directory
-     * @throws Exception
+     * @throws Exception caller must handle everything
      */
     public static synchronized IndexWriter openIndexWriter(final IndexContext indexContext, final Directory directory, final boolean create) throws Exception {
         @SuppressWarnings("resource")
@@ -274,7 +274,7 @@ public final class IndexManager {
      * @return the full path to the
      */
     @SuppressWarnings("StringBufferReplaceableByString")
-    public static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
+    static String getIndexDirectory(final IndexContext indexContext, final long time, final String ip) {
         StringBuilder builder = new StringBuilder();
         builder.append(IndexManager.getIndexDirectoryPath(indexContext));
         builder.append(IConstants.SEP);
@@ -298,16 +298,12 @@ public final class IndexManager {
      * @return the latest time stamped directory at this path, in other words the ./indexes/ikube/123456789 directory. Note that there is no Lucene index at
      * this path, the Lucene index is still in the server ip address directory in this time stamp directory, i.e. at ./indexes/ikube/123456789/127.0.0.1
      */
-    public static synchronized File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
-        try {
-            File baseIndexDirectory = FILE.getFile(baseIndexDirectoryPath, Boolean.TRUE);
-            return getLatestIndexDirectory(baseIndexDirectory, null);
-        } finally {
-            IndexManager.class.notifyAll();
-        }
+    public static File getLatestIndexDirectory(final String baseIndexDirectoryPath) {
+        File baseIndexDirectory = FILE.getFile(baseIndexDirectoryPath, Boolean.TRUE);
+        return getLatestIndexDirectory(baseIndexDirectory, null);
     }
 
-    public static synchronized File getLatestIndexDirectory(final File file, final File latestSoFar) {
+    public static File getLatestIndexDirectory(final File file, final File latestSoFar) {
         if (file == null) {
             return latestSoFar;
         }
@@ -338,7 +334,7 @@ public final class IndexManager {
      * @param string the string to verify for digit data
      * @return whether every character in a string is a digit
      */
-    public static boolean isDigits(final String string) {
+    private static boolean isDigits(final String string) {
         if (string == null || string.trim().equals("")) {
             return false;
         }
@@ -544,7 +540,7 @@ public final class IndexManager {
         return document;
     }
 
-    public static Document addReaderField(final String fieldName, final Document document, final Reader reader, final boolean vectored, final float boost) {
+    static Document addReaderField(final String fieldName, final Document document, final Reader reader, final boolean vectored, final float boost) {
         if (fieldName != null && reader != null) {
             FieldType fieldType = new FieldType();
             Field field = (Field) document.getField(fieldName);

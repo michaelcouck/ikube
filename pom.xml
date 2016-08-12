@@ -5,7 +5,7 @@
     <groupId>ikube</groupId>
     <artifactId>ikube</artifactId>
     <packaging>pom</packaging>
-    <version>5.3.0</version>
+    <version>5.3.1</version>
 
     <scm>
         <url>https://github.com/michaelcouck/ikube</url>
@@ -53,7 +53,7 @@
     </modules>
 
     <properties>
-        <ikube-version>5.3.0</ikube-version>
+        <ikube-version>5.3.1</ikube-version>
 
         <encoding>UTF8</encoding>
         <targetJdk>1.7</targetJdk>
@@ -143,9 +143,11 @@
                     <executions>
                         <execution>
                             <id>copy-configuration</id>
-                            <phase>site</phase>
+                            <phase>compile</phase>
                             <configuration>
                                 <target>
+                                    <echo message="Copying configuration to module directories!"/>
+
                                     <!--<echo message="basedir : ${basedir}, ">basedir : ${basedir}</echo>
                                     <echo message="pom.basedir : ${pom.basedir}, ">pom.basedir : ${pom.basedir}</echo>
                                     <echo message="pom.baseUri : ${pom.baseUri}, ">pom.baseUri : ${pom.baseUri}</echo>

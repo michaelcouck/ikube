@@ -43,12 +43,11 @@ public class SearchSpatial extends SearchComplex {
      * The origin, i.e. the starting point for the distance search.
      */
     protected transient Coordinate coordinate;
-    protected SpatialStrategy spatialStrategy;
-    protected SpatialPrefixTree spatialPrefixTree;
+    private SpatialStrategy spatialStrategy;
     /**
      * The spatial context for calculating distance and so on.
      */
-    protected transient SpatialContext spatialContext;
+    private transient SpatialContext spatialContext;
 
     /**
      * Constructor takes the searcher. This class needs to be instantiated
@@ -64,7 +63,7 @@ public class SearchSpatial extends SearchComplex {
     public SearchSpatial(final IndexSearcher searcher, final Analyzer analyzer) {
         super(searcher, analyzer);
         spatialContext = SpatialContext.GEO;
-        spatialPrefixTree = new GeohashPrefixTree(spatialContext, IConstants.MAX_GEOHASH_LEVELS);
+        SpatialPrefixTree spatialPrefixTree = new GeohashPrefixTree(spatialContext, IConstants.MAX_GEOHASH_LEVELS);
         spatialStrategy = new RecursivePrefixTreeStrategy(spatialPrefixTree, IConstants.POSITION_FIELD_NAME);
     }
 

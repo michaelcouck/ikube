@@ -43,7 +43,7 @@ public final class WekaToolkit {
      * @param instances the instances data to write to the file
      * @param filePath  the absolute path to the output file
      */
-    public static void writeToArff(final Instances instances, final String filePath) {
+    static void writeToArff(final Instances instances, final String filePath) {
         try {
             ArffSaver arffSaver = new ArffSaver();
             arffSaver.setInstances(instances);
@@ -83,7 +83,7 @@ public final class WekaToolkit {
      *                   set to Integer.MAX_VALUE then the last attribute will be used as the class index
      * @return the instances object created from the matrix, with all the attributes doubles or strings, ready for processing
      */
-    public static Instances matrixToInstances(final Object[][] matrix, final int classIndex) throws ParseException {
+    static Instances matrixToInstances(final Object[][] matrix, final int classIndex) throws ParseException {
         // Create the instances from the matrix data
         ArrayList<Attribute> attributes = new ArrayList<>();
         // Add the attributes to the data set
@@ -118,7 +118,7 @@ public final class WekaToolkit {
      * @param inputStream the Json matrix representation from the input stream to convert to the instances
      * @return the instances object from the string input
      */
-    public static Instances csvToInstances(final InputStream inputStream) {
+    static Instances csvToInstances(final InputStream inputStream) {
         try {
             String input = getContents(inputStream, Integer.MAX_VALUE).toString();
             String[] rows = split(input, "\n\r");
@@ -140,7 +140,7 @@ public final class WekaToolkit {
      * @param inputStream the arff input data to create the instances from
      * @return the instances data set from the arff data input
      */
-    public static Instances arffToInstances(final InputStream inputStream) {
+    static Instances arffToInstances(final InputStream inputStream) {
         try (Reader reader = new InputStreamReader(inputStream)) {
             return new Instances(reader);
         } catch (final IOException e) {
@@ -182,15 +182,29 @@ public final class WekaToolkit {
      * @param vector    the vector of values to convert to an instance
      * @return the instance object, with the instances set as the data set
      */
-    public static Instance getInstance(final Instances instances, final Object[] vector) {
+    static Instance getInstance(final Instances instances, final Object[] vector) {
         int featureSpace = Math.max(instances.numAttributes(), vector.length);
         Instance instance = instances.numAttributes() == vector.length ? new DenseInstance(featureSpace) : new SparseInstance(featureSpace);
         instance.setDataset(instances);
-        String[] dateFormats = new String[] {IConstants.SHORT_DATE_FORMAT, IConstants.ANALYTICS_DATE_FORMAT};
-        //  && i < vector.length
-        for (int i = instances.numAttributes() - 1, j = vector.length - 1; i >= 0 && j >= 0; i--, j--) {
-            // System.out.println("I : " + i + ", j : " + j);
-            String value = vector[j] == null ? "" : vector[j].toString();
+        String[] dateFormats = new String[]{IConstants.SHORT_DATE_FORMAT, IConstants.ANALYTICS_DATE_FORMAT};
+        Object[] trimmedVector;
+        if (vector.length > instances.numAttributes()) {
+            LOGGER.info("Attributes : " + instances.numAttributes() + ", vector : " + vector.length);
+            for (int i = 0; i < instances.numAttributes(); i++) {
+                Attribute attribute = instances.attribute(i);
+                LOGGER.info("        attribute : " + attribute.toString());
+            }
+            for (final Object value : vector) {
+                LOGGER.info("        value : " + value);
+            }
+            // Make the vector the same length as the number of attributes or we'll have an issue
+            trimmedVector = new Object[instances.numAttributes()];
+            System.arraycopy(vector, 0, trimmedVector, 0, trimmedVector.length);
+        } else {
+            trimmedVector = vector;
+        }
+        for (int i = instances.numAttributes() - 1, j = trimmedVector.length - 1; i >= 0 && j >= 0; i--, j--) {
+            String value = trimmedVector[j] == null ? "" : trimmedVector[j].toString();
             Attribute attribute = instances.attribute(i);
             switch (attribute.type()) {
                 case Attribute.DATE: {
@@ -229,7 +243,7 @@ public final class WekaToolkit {
      * @param instance the instance to filter into the correct form for the analyser
      * @param filter   the filter to use for the transformation
      * @return the filtered instance that is usable in the analyzer
-     * @throws Exception
+     * @throws Exception anything and everything, let the caller handle if necessary
      */
     public static Instance filter(final Instance instance, final Filter filter) throws Exception {
         Instance filteredInstance = instance;
@@ -248,7 +262,7 @@ public final class WekaToolkit {
      * @param instances the instances data set to apply the filters on, converting and returning a new instances object potentially
      * @param filter    the filter to be applied to the data in the instances object
      * @return a filtered instances, potentially a new instance
-     * @throws Exception
+     * @throws Exception anything and everything, let the caller handle if necessary
      */
     public static synchronized Instances filter(final Instances instances, final Filter filter) throws Exception {
         Instances filteredInstances = instances;
@@ -267,7 +281,7 @@ public final class WekaToolkit {
      * @param instances  the instances to be used for the cross validation
      * @param folds      the number of folds to cross validate the model
      * @return the error rate of the cross validation
-     * @throws Exception
+     * @throws Exception anything and everything, let the caller handle if necessary
      */
     @SuppressWarnings("UnusedDeclaration")
     public static double crossValidate(final Classifier classifier, final Instances instances, final int folds) throws Exception {

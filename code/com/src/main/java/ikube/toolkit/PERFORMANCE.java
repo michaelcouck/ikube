@@ -26,7 +26,7 @@ public class PERFORMANCE {
     /**
      * This is the interface to implement by clients that want to test the performance on a method.
      */
-    interface IPerform {
+    public interface IPerform {
 
         boolean log();
 

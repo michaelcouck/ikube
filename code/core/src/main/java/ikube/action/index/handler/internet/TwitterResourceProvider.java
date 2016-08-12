@@ -1,18 +1,18 @@
 package ikube.action.index.handler.internet;
 
-import ikube.IConstants;
 import ikube.action.index.handler.IResourceProvider;
 import ikube.model.IndexableTweets;
-import ikube.toolkit.SERIALIZATION;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.social.twitter.api.*;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class will use the Spring social module to get tweets from Twitter, at a rate of around 1% of the tweets.
@@ -21,10 +21,11 @@ import java.util.Stack;
  * @version 01.00
  * @since 19-06-2013
  */
-class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListener {
+class TwitterResourceProvider implements IResourceProvider<Tweet> {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(TwitterResourceProvider.class);
+    private Logger logger = LoggerFactory.getLogger(TwitterResourceProvider.class);
 
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private int clones;
     private Stream stream;
     private boolean terminated;
@@ -45,8 +46,39 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
                 indexableTweets.getToken(), //
                 indexableTweets.getTokenSecret());
         StreamingOperations streamingOperations = twitterTemplate.streamingOperations();
-        StreamListener streamListener = this;
-        List<StreamListener> listeners = Arrays.asList(streamListener);
+        StreamListener streamListener = new StreamListener() {
+
+            final AtomicInteger counter = new AtomicInteger();
+            final AtomicInteger deleted = new AtomicInteger();
+
+            @Override
+            public void onTweet(final Tweet tweet) {
+                if (tweets.size() < 10000) {
+                    tweets.push(tweet);
+                }
+                if (counter.incrementAndGet() % 1000 == 0) {
+                    logger.info("Tweets received : " + counter.get() + ", tweet cache : " + tweets.size() + ", tweet : " + ToStringBuilder.reflectionToString(tweet));
+                }
+            }
+
+            @Override
+            public void onDelete(final StreamDeleteEvent streamDeleteEvent) {
+                if (deleted.incrementAndGet() % 1000 == 0) {
+                    logger.info("Deleted : " + deleted.get() + ", event : " + ToStringBuilder.reflectionToString(streamDeleteEvent));
+                }
+            }
+
+            @Override
+            public void onLimit(final int i) {
+                logger.info("Limit : " + i);
+            }
+
+            @Override
+            public void onWarning(final StreamWarningEvent streamWarningEvent) {
+                logger.info("Warning : " + streamWarningEvent);
+            }
+        };
+        List<StreamListener> listeners = Collections.singletonList(streamListener);
         stream = streamingOperations.sample(listeners);
     }
 
@@ -64,6 +96,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
     @Override
     public void setTerminated(final boolean terminated) {
         this.terminated = terminated;
+        logger.info("Closing twitter stream : ");
         stream.close();
     }
 
@@ -71,21 +104,28 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * {@inheritDoc}
      */
     @Override
-    public synchronized Tweet getResource() {
+    public Tweet getResource() {
         if (isTerminated()) {
-            stream.close();
             return null;
         }
-        while (tweets.isEmpty()) {
-            try {
-                LOGGER.debug("Waiting for tweets : ");
-                wait(10000);
-            } catch (final InterruptedException e) {
-                LOGGER.error(null, e);
-            } catch (final Exception e) {
-                LOGGER.error(null, e);
-                return null;
+        int retry = 15;
+        while (tweets.isEmpty() && retry-- > 0) {
+            if (isTerminated()) {
+                break;
             }
+            synchronized (this) {
+                logger.info("Waiting for tweets : " + tweets.size());
+                try {
+                    wait(15000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                notifyAll();
+            }
+        }
+        if (tweets.isEmpty()) {
+            setTerminated(Boolean.TRUE);
+            return null;
         }
         return tweets.pop();
     }
@@ -94,53 +134,10 @@ class TwitterResourceProvider implements IResourceProvider<Tweet>, StreamListene
      * {@inheritDoc}
      */
     @Override
-    public synchronized void setResources(final List<Tweet> tweets) {
+    public void setResources(final List<Tweet> tweets) {
         if (tweets != null) {
             this.tweets.addAll(tweets);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized void onTweet(final Tweet tweet) {
-        if (tweets.size() < IConstants.ONE_THOUSAND) {
-            if (tweets.size() % 1000 == 0) {
-                LOGGER.info("Tweets : " + tweets.size());
-            }
-            tweets.push(tweet);
-            if (this.clones > 0) {
-                int clones = this.clones;
-                do {
-                    Tweet clone = (Tweet) SERIALIZATION.clone(tweet);
-                    tweets.push(clone);
-                } while (--clones > 0);
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onLimit(final int numberOfLimitedTweets) {
-        LOGGER.warn("Tweets limited : " + numberOfLimitedTweets);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onDelete(final StreamDeleteEvent deleteEvent) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onWarning(final StreamWarningEvent warnEvent) {
-        LOGGER.warn("Tweet warning : " + warnEvent.getCode());
     }
 
 }

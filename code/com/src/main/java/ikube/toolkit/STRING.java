@@ -16,8 +16,8 @@ import java.util.Arrays;
  */
 public final class STRING {
 
-    public static final char SPACE = ' ';
-    public static final char[] EXCLUSIONS = {'.', ',', ';', ':', '?', '!', '\'', '-'};
+    private static final char SPACE = ' ';
+    private static final char[] EXCLUSIONS = {'.', ',', ';', ':', '?', '!', '\'', '-'};
 
     static {
         Arrays.sort(EXCLUSIONS);

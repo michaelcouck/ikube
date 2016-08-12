@@ -1,15 +1,12 @@
 package ikube.action.index.handler.internet;
 
 import ikube.IConstants;
-import ikube.action.index.IndexManager;
 import ikube.action.index.handler.ResourceHandler;
 import ikube.model.IndexContext;
 import ikube.model.IndexableTweets;
 import org.apache.lucene.document.Document;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TwitterProfile;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 import static ikube.action.index.IndexManager.addNumericField;
 import static ikube.action.index.IndexManager.addStringField;
@@ -23,10 +20,7 @@ import static ikube.action.index.IndexManager.addStringField;
  */
 public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
-    private AtomicLong counter;
-
     public void init() {
-        counter = new AtomicLong(0);
     }
 
     /**
@@ -54,14 +48,10 @@ public class TwitterResourceHandler extends ResourceHandler<IndexableTweets> {
 
         handleProfile(indexableTweets, document, tweet);
 
-        if (counter.getAndIncrement() % 10000 == 0) {
-            logger.info("Document : " + document);
-        }
-
         return super.handleResource(indexContext, indexableTweets, document, resource);
     }
 
-    void handleProfile(final IndexableTweets indexableTweets, final Document document, final Tweet tweet) {
+    private void handleProfile(final IndexableTweets indexableTweets, final Document document, final Tweet tweet) {
         String userNameField = indexableTweets.getUserNameField();
         String userScreenNameField = indexableTweets.getUserScreenNameField();
         String userLocationField = indexableTweets.getUserLocationField();

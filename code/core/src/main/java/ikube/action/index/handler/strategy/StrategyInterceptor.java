@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class StrategyInterceptor implements IStrategyInterceptor {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StrategyInterceptor.class);
 
     /**
      * {@inheritDoc}

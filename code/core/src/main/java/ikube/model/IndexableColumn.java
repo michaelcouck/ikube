@@ -30,6 +30,8 @@ public class IndexableColumn extends Indexable {
             "actually a string or alphanumeric.")
     private boolean hashed;
     @Column
+    private int index;
+    @Column
     @PrimaryKeyJoinColumn
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private IndexableColumn foreignKey;
@@ -108,4 +110,11 @@ public class IndexableColumn extends Indexable {
         this.nameColumn = nameColumn;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 }

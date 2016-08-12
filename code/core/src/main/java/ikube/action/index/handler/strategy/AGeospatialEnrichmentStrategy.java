@@ -68,7 +68,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         // order must be longitude(x) and latitude(y), not the other way
         Shape shape = spatialContext.makePoint(coordinate.getLongitude(), coordinate.getLatitude());
         for (final IndexableField indexableField : spatialStrategy.createIndexableFields(shape)) {
-            logger.info("Adding spatial field : " + indexableField);
+            // logger.info("Adding spatial field : " + indexableField);
             document.add(indexableField);
         }
         // Store this field any way
@@ -88,7 +88,7 @@ public abstract class AGeospatialEnrichmentStrategy extends AStrategy {
         THREAD.submit(name, new Runnable() {
             public void run() {
                 try {
-                    THREAD.sleep(120000);
+                    THREAD.sleep(10000);
                     Collection<GeoCity> geoCities = dataBase.find(GeoCity.class, 0, Integer.MAX_VALUE);
                     if (geoCities != null) {
                         for (final GeoCity geoCity : geoCities) {

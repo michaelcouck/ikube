@@ -1,14 +1,12 @@
 package ikube.action.index.handler.internet;
 
 import ikube.AbstractTest;
-import ikube.IConstants;
 import ikube.mock.TwitterTemplateMock;
 import ikube.model.IndexableTweets;
 import ikube.toolkit.PERFORMANCE;
 import mockit.Mockit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.social.twitter.api.Tweet;
@@ -16,7 +14,6 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -59,25 +56,6 @@ public class TwitterResourceProviderTest extends AbstractTest {
                 assertNotNull(tweet);
             }
         }, "Depletion of the tweets ", 1000, true);
-    }
-
-    @Test
-    @Ignore
-    public void onTweetLeak() {
-        System.gc();
-        final long before = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / IConstants.MILLION;
-        final AtomicInteger atomicInteger = new AtomicInteger(0);
-        twitterResourceProvider.onTweet(tweet);
-        PERFORMANCE.execute(new PERFORMANCE.APerform() {
-            public void execute() {
-                if (atomicInteger.incrementAndGet() % 10000 == 0) {
-                    printMemoryDelta(before);
-                }
-                twitterResourceProvider.onTweet(tweet);
-                twitterResourceProvider.getResource();
-            }
-        }, "Depletion of the tweets ", 1000000, true);
-        printMemoryDelta(before);
     }
 
 }

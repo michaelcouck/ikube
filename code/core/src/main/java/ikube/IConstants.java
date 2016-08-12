@@ -93,7 +93,7 @@ public interface IConstants extends Constants {
     String PORT = "port";
     String INDEX_CONTEXT = "indexContext";
     String GEOSPATIAL = "geospatial";
-    String GEOSPATIAL_CSV = "geospatial-csv";
+    String GEOSPATIAL_CSV = "geoname-csv";
     String AUTOCOMPLETE = "autocomplete";
     String COUNTRY = "country";
     String CORRECTIONS = "corrections";

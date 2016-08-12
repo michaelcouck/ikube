@@ -75,6 +75,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             }
         }
         // Load the models(Instances) for all the analyzers
+        //noinspection ConfusingArgumentToVarargsMethod
         context.setModels(instances(context));
     }
 
@@ -154,7 +155,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @param context  the context for the analyzer, holds all the components, the classifier, the model and the options etc.
      * @param instance the instance to get the distribution for
      * @return the probability distribution for the instance over the classesOrClusters or clusters
-     * @throws Exception
+     * @throws Exception anything and everything, let the caller handle if necessary
      */
     abstract double[][] distributionForInstance(final Context context, final Instance instance) throws Exception;
 
@@ -198,7 +199,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      * @param input the input to convert to an array or vector for the analyzers
      * @return the array from the input object, typically either a string like '[1,2,3,...]'
      */
-    Object[] inputToArray(final Object input) {
+    private Object[] inputToArray(final Object input) {
         if (input == null) {
             return null;
         }
@@ -218,7 +219,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      *
      * @param context the configuration object to build the instances object from
      * @return the instances object built from the arff training and structure file
-     * @throws IOException
+     * @throws IOException anything and everything, let the caller handle if necessary
      */
     Instances[] instances(final Context context) throws IOException {
         InputStream[] inputStreams = getInputStreams(context);
@@ -250,7 +251,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      *
      * @param context the context for the analyzer
      * @return the input stream either to the data file for training or a stream from the input in the context
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the training data is not found, configuration error
      */
     InputStream[] getInputStreams(final Context context) throws FileNotFoundException {
         InputStream[] inputStreams = null;
@@ -278,7 +279,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      *
      * @param instances the data set of instances to get the distribution for, of the individual instances of course
      * @return the total distribution for all the instances in the data set
-     * @throws Exception
+     * @throws Exception anything and everything, let the caller handle if necessary
      */
     @SuppressWarnings("unchecked")
     double[][][] getDistributionForInstances(final Context context, final Instances instances) throws Exception {

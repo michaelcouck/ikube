@@ -5,7 +5,7 @@ import ikube.action.index.handler.IResourceProvider;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableFileSystemCsv;
-import ikube.toolkit.SERIALIZATION;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -49,12 +50,19 @@ class FileSystemCsvResourceProvider implements IResourceProvider<List<IndexableC
         String separator = indexableFileSystemCsv.getSeparator();
         String headerLine = lineIterator.nextLine();
         String[] columns = StringUtils.splitPreserveAllTokens(headerLine, separator);
+        List<Indexable> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
         // Trim any space on the column headers
         for (int i = 0; i < columns.length; i++) {
             columns[i] = columns[i].trim();
+            for (final Indexable indexable : indexableColumns) {
+                IndexableColumn indexableColumn = (IndexableColumn) indexable;
+                if (indexableColumn.getName().equals(columns[i])) {
+                    indexableColumn.setIndex(i);
+                }
+            }
         }
 
-        List<Indexable> indexableColumns = getIndexableColumns(indexableFileSystemCsv, columns);
+
         indexableFileSystemCsv.setChildren(indexableColumns);
         logger.info("Doing columns : " + indexableColumns.size());
     }
@@ -64,7 +72,7 @@ class FileSystemCsvResourceProvider implements IResourceProvider<List<IndexableC
      */
     @Override
     public synchronized List<IndexableColumn> getResource() {
-        if (resources.size() < 10) {
+        if (resources.size() == 0) {
             replenishResources();
         }
         notifyAll();
@@ -87,14 +95,19 @@ class FileSystemCsvResourceProvider implements IResourceProvider<List<IndexableC
                 } else {
                     indexableColumns = new ArrayList<>();
                     for (final Indexable indexable : indexableFileSystemCsv.getChildren()) {
-                        IndexableColumn indexableColumn = (IndexableColumn) SERIALIZATION.clone(indexable);
+                        IndexableColumn indexableColumn = new IndexableColumn();
+                        try {
+                            BeanUtilsBean.getInstance().copyProperties(indexableColumn, indexable);
+                        } catch (final IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
                         indexableColumns.add(indexableColumn);
                     }
                 }
 
-                for (int i = 0; i < values.length && i < indexableColumns.size(); i++) {
-                    IndexableColumn indexableColumn = indexableColumns.get(i);
-                    indexableColumn.setContent(values[i]);
+                for (final IndexableColumn indexableColumn : indexableColumns) {
+                    indexableColumn.setContent(values[indexableColumn.getIndex()]);
+                    indexableColumn.setRawContent(values[indexableColumn.getIndex()]);
                 }
 
                 ++lineNumber;

@@ -28,14 +28,19 @@ public class Analyze extends Action<Analysis> {
     @Override
     @SuppressWarnings("unchecked")
     public Analysis call() throws Exception {
-        // Get the remote analytics service
-        IAnalyticsService service = getAnalyticsService();
-        Context context = service.getContext(analysis.getContext());
-        if (context != null) {
-            IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
-            analyzer.analyze(context, analysis);
+        try {
+            // Get the remote analytics service
+            IAnalyticsService service = getAnalyticsService();
+            Context context = service.getContext(analysis.getContext());
+            if (context != null) {
+                IAnalyzer analyzer = (IAnalyzer) context.getAnalyzer();
+                analyzer.analyze(context, analysis);
+            }
+            // And return the analysis to the caller, which may not be local
+            return analysis;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-        // And return the analysis to the caller, which may not be local
-        return analysis;
     }
 }
