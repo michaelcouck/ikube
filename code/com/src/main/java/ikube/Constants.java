@@ -26,7 +26,7 @@ public interface Constants {
      * @version 01.00
      * @since 07-06-2014
      */
-    public class IdExclusionStrategy implements ExclusionStrategy {
+    class IdExclusionStrategy implements ExclusionStrategy {
 
         /**
          * {@inheritDoc}

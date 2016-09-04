@@ -1,7 +1,8 @@
 package ikube.database;
 
 import ikube.toolkit.LOGGING;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public final class DatabaseUtilities {
         LOGGING.configure();
     }
 
-    private static final Logger LOGGER = Logger.getLogger(DatabaseUtilities.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseUtilities.class);
 
     /**
      * This method will close all related resources to the category set object in the parameter list. First getting the statement from the category set, then
@@ -149,7 +150,7 @@ public final class DatabaseUtilities {
         return primaryKeyColumns;
     }
 
-    public static void printResultSet(final ResultSet resultSet) {
+    private static void printResultSet(final ResultSet resultSet) {
         try {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {

@@ -27,7 +27,7 @@ public final class OBJECT {
      * @author Michael Couck
      */
     public interface Predicate {
-        public boolean perform(final Object target);
+        boolean perform(final Object target);
     }
 
     private static final Logger LOGGER = Logger.getLogger(OBJECT.class);
@@ -268,10 +268,10 @@ public final class OBJECT {
      *
      * @param enumerationClass the class to get one of the enumerations for
      * @return the first enumeration in the class that is found
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
+     * @throws IllegalArgumentException bla...
+     * @throws IllegalAccessException bla...
      */
-    public static Enum<?> getEnum(final Class<?> enumerationClass) throws IllegalArgumentException, IllegalAccessException {
+    private static Enum<?> getEnum(final Class<?> enumerationClass) throws IllegalArgumentException, IllegalAccessException {
         Field[] fields = enumerationClass.getDeclaredFields();
         for (final Field field : fields) {
             if (field.isEnumConstant()) {
@@ -341,7 +341,7 @@ public final class OBJECT {
      * @param klass the class of the object
      * @return the id field for the object or null if there is no field designated as the id
      */
-    public static Field getIdField(final Class<?> klass) {
+    private static Field getIdField(final Class<?> klass) {
         Field idField = ID_FIELDS.get(klass);
         if (idField != null) {
             return idField;

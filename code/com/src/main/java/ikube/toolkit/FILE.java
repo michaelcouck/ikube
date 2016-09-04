@@ -3,7 +3,8 @@ package ikube.toolkit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public final class FILE {
 
-    private static final Logger LOGGER = Logger.getLogger(FILE.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FILE.class);
 
     /**
      * This method looks through all the files defined in the folder in the parameter
@@ -82,7 +83,7 @@ public final class FILE {
      * @param stringPatterns the patterns to look for in the file paths
      * @return the directory that matches the pattern startup from a higher directory
      */
-    public static File findDirectoryRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
+    static File findDirectoryRecursively(final File folder, final int upDirectories, final String... stringPatterns) {
         File upFolder = moveUpDirectories(folder, upDirectories);
         return findDirectoryRecursively(upFolder, stringPatterns);
     }
@@ -97,6 +98,7 @@ public final class FILE {
      * @param stringPatterns the patterns to look for in the file paths
      * @return the directory that matches the pattern startup from a higher directory
      */
+    @SuppressWarnings("unused")
     public static File findDirectoryRecursivelyUp(final File folder, final String toDirectory, final String... stringPatterns) {
         File upFolder = moveUpDirectories(folder, toDirectory);
         return findDirectoryRecursively(upFolder, stringPatterns);
@@ -115,7 +117,7 @@ public final class FILE {
         return upFolder;
     }
 
-    public static File moveUpDirectories(final File folder, final String toFolder) {
+    static File moveUpDirectories(final File folder, final String toFolder) {
         if (folder.getName().equals(toFolder)) {
             return folder;
         }
@@ -178,7 +180,7 @@ public final class FILE {
      * @param stringPatterns the patterns to search for in the directories
      * @return the list of files found for the patterns in the directories
      */
-    public static List<File> findFilesRecursively(final File folder, final int upDirectories, final List<File> files, final String... stringPatterns) {
+    static List<File> findFilesRecursively(final File folder, final int upDirectories, final List<File> files, final String... stringPatterns) {
         File startFolder = moveUpDirectories(folder, upDirectories);
         return findFilesRecursively(startFolder, files, stringPatterns);
     }
@@ -191,7 +193,7 @@ public final class FILE {
      * @param stringPatterns the pattern to look for in the file path
      * @return an array of files with the specified pattern in the path
      */
-    public static File[] findFiles(final File folder, final String... stringPatterns) {
+    static File[] findFiles(final File folder, final String... stringPatterns) {
         final Pattern pattern = getPattern(stringPatterns);
         return folder.listFiles(new FileFilter() {
             @Override
@@ -309,7 +311,7 @@ public final class FILE {
      * @param stringPatterns the name patterns of the file
      * @return the contents of the first file found that matches the pattern
      */
-    public static String findFileRecursivelyAndGetContents(final File folder, final String... stringPatterns) {
+    static String findFileRecursivelyAndGetContents(final File folder, final String... stringPatterns) {
         return getContent(findFileRecursively(folder, stringPatterns));
     }
 
@@ -351,7 +353,7 @@ public final class FILE {
      * @param stringPatterns the regular expression patterns
      * @return the pattern generated from the strings
      */
-    public static Pattern getPattern(final String... stringPatterns) {
+    private static Pattern getPattern(final String... stringPatterns) {
         boolean first = Boolean.TRUE;
         StringBuilder builder = new StringBuilder();
         for (String stringPattern : stringPatterns) {
@@ -386,7 +388,7 @@ public final class FILE {
         return deleteFile(file, maxRetryCount, 0);
     }
 
-    protected static void makeReadWrite(final File file) {
+    private static void makeReadWrite(final File file) {
         boolean readable = file.setReadable(true, false);
         boolean writable = file.setWritable(true, false);
         if (!readable || !writable) {

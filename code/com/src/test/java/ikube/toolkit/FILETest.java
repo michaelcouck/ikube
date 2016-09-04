@@ -134,7 +134,7 @@ public class FILETest extends AbstractTest {
 
     @Test
     public void findDirectoryRecursively() {
-        File file = FILE.findDirectoryRecursively(new File("."), new String[]{"data"});
+        File file = FILE.findDirectoryRecursively(new File("."), "data");
         assertNotNull(file);
         assertTrue(file.exists());
         assertTrue(file.isDirectory());

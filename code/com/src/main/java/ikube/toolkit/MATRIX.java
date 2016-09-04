@@ -62,6 +62,7 @@ public final class MATRIX {
      * @param vector the array to convert to the string array
      * @return the string array from the input
      */
+    @SuppressWarnings("unused")
     public static String[] objectVectorToStringVector(final Object[] vector) {
         String[] stringVector = new String[vector.length];
         for (int i = 0; i < vector.length; i++) {
@@ -82,7 +83,7 @@ public final class MATRIX {
      * @param excludedColumns the indexes of the columns in the matrix to exclude
      * @return the matrix stripped of it's columns, note it is a new object reference
      */
-    public static Object[][] excludeColumns(final Object[][] matrix, final int... excludedColumns) {
+    static Object[][] excludeColumns(final Object[][] matrix, final int... excludedColumns) {
         Object[][] prunedMatrix = new Object[matrix.length][];
         for (int i = 0; i < matrix.length; i++) {
             Object[] vector = matrix[i];
@@ -121,6 +122,7 @@ public final class MATRIX {
      * @return the matrix of columns that can be used to reduce the vector space of the input matrix. Note that
      * the features are removed from the end of the vectors, not the begining
      */
+    @SuppressWarnings("unused")
     public static int[][] excludedColumnsPermutation(final Object[][] matrix, final int excludedColumnsPercentage) {
         List<int[]> excludedColumnsList = new ArrayList<>();
         int lengthOfExcludedColumnsArray = matrix[0].length * excludedColumnsPercentage / 100;
