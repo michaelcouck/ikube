@@ -51,7 +51,7 @@ public class VERSION {
      * This method will read the pom properties file where the version and the build timestamp are and make
      * them available to the web pages via the static class properties of the same name.
      */
-    public static synchronized void readPomProperties() {
+    public static void readPomProperties() {
         String pomPropertiesFile = "META-INF/maven/ikube/ikube-core/pom.properties";
         InputStream inputStream = null;
         try {

@@ -63,14 +63,16 @@ public class IndexSizeSchedule extends Schedule {
             IndexWriter newIndexWriter = null;
             try {
                 newIndexDirectory = getNewIndexDirectory(indexWriters);
-                LOGGER.error("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
+                LOGGER.info("Starting new index : " + indexContext.getIndexName() + ", " + newIndexDirectory);
                 newIndexWriter = IndexManager.openIndexWriter(indexContext, newIndexDirectory, true);
 
                 IndexWriter[] newIndexWriters = new IndexWriter[indexWriters.length + 1];
                 System.arraycopy(indexWriters, 0, newIndexWriters, 0, indexWriters.length);
                 newIndexWriters[newIndexWriters.length - 1] = newIndexWriter;
-                LOGGER.error("Switched to the new index writer : " + indexContext);
+                LOGGER.info("Switched to the new index writer : " + indexContext);
                 indexContext.setIndexWriters(newIndexWriters);
+                LOGGER.info("Closing index writer : " + indexWriters[indexWriters.length - 2]);
+                IndexManager.closeIndexWriter(indexWriters[indexWriters.length - 2]);
             } catch (final Exception e) {
                 LOGGER.error("Exception starting a new index : ", e);
 

@@ -39,6 +39,7 @@ public class AnalyzerManager {
         class Builder implements Runnable {
             public void run() {
                 try {
+                    LOGGER.info("Building analyzer : " + context.getName());
                     analyzer.init(context);
                     analyzer.build(context);
                     context.setBuilt(Boolean.TRUE);
@@ -60,7 +61,7 @@ public class AnalyzerManager {
             THREAD.waitForFuture(future, Integer.MAX_VALUE);
         }
         if (future != null && future.isDone()) {
-            LOGGER.info("Analyzer finished building : " + future.isDone());
+            LOGGER.info("Analyzer finished building : " + context.getName());
         } else {
             LOGGER.info("Analyzer still building : " + context.getName());
         }

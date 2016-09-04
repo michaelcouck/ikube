@@ -30,7 +30,7 @@ public class WekaForecastClassifier extends WekaClassifier {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         // For the forecaster we have already built the models, we just need
         // to specify the options for the forecast, like the number is days into the future etc.
         Object input = analysis.getInput();

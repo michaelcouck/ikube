@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static ikube.IConstants.ANALYTICS_DIRECTORY;
 import static ikube.toolkit.ApplicationContextManager.getConfigFilePath;
@@ -64,7 +63,6 @@ public abstract class AAnalyzer<I, O, C> implements IAnalyzer<I, O, C> {
             }
             dataFiles[i] = dataFile;
         }
-        logger.info("Data files : " + Arrays.toString(dataFiles));
         return dataFiles;
     }
 

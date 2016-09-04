@@ -18,8 +18,8 @@ module.controller('TwitterController', function($scope, $http, $injector, $timeo
 	// Ths original co-ordinate, if it is exactly this then
 	// the search will not take the co-ordinate into account
     $scope.coordinate = {latitude: -33.9, longitude: 18.4};
-	$scope.showMap = false;
-	$scope.showLanguages = false;
+	$scope.showMap = true;
+	$scope.showLanguages = true;
 	$scope.statistics = undefined;
     $scope.languageIndex = 1;
 	

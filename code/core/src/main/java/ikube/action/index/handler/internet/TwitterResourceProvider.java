@@ -114,7 +114,7 @@ class TwitterResourceProvider implements IResourceProvider<Tweet> {
                 break;
             }
             synchronized (this) {
-                logger.info("Waiting for tweets : " + tweets.size());
+                logger.info("Waiting for tweets : " + tweets.size() + ", thread : " + Thread.currentThread());
                 try {
                     wait(15000);
                 } catch (InterruptedException e) {

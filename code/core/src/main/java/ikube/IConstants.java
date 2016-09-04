@@ -35,6 +35,7 @@ public interface IConstants extends Constants {
     String SEP = "/";
     String IKUBE_DIRECTORY = "." + SEP + IKUBE;
     String ANALYTICS_DIRECTORY = IKUBE_DIRECTORY + SEP + "analytics";
+    String SERIALIZED_CLASSIFIERS_DIRECTORY = IKUBE_DIRECTORY + SEP + "analytics" + SEP + "serialized-classifiers" + SEP;
 
     String SPACE = " ";
     String BCK_SEP = "\\";

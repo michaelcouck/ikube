@@ -118,7 +118,8 @@
 				<executions>
 					<execution>
 						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
+						<!--<phase>pre-integration-test</phase>-->
+						<phase>site</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
@@ -151,33 +152,6 @@
 			<version>${ikube-version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-server</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-util</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>example-jetty-embedded</artifactId>-->
-            <!--<version>${jetty-version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-embedded-examples</artifactId>-->
-            <!--<version>7.0.0.M2</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

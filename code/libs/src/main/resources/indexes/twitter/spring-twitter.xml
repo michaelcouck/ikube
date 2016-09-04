@@ -124,8 +124,8 @@
             lazy-init="true"/>
 
     <bean
-            id="analyzer-twitter-naive-bays"
-            name="analyzer-twitter-naive-bays"
+            id="analyzer-twitter-smo"
+            name="analyzer-twitter-smo"
             class="ikube.analytics.weka.WekaClassifier"/>
     <!-- These are the language classifiers, they are trained by the Twitter data -->
     <bean
@@ -133,7 +133,7 @@
             name="sentiment-smo-twitter"
             class="ikube.model.Context"
             property:name="sentiment-smo-twitter"
-            property:analyzer-ref="analyzer-twitter-naive-bays">
+            property:analyzer-ref="analyzer-twitter-smo">
         <property name="filters">
             <list>
                 <value>weka.filters.unsupervised.attribute.StringToWordVector</value>
@@ -152,18 +152,18 @@
         </property>
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
             </list>
         </property>
         <property name="fileNames">
@@ -199,11 +199,6 @@
             </list>
         </property>
     </bean>
-
-    <bean
-            id="ikube.analytics.AnalyzerManager"
-            name="ikube.analytics.AnalyzerManager"
-            class="ikube.analytics.AnalyzerManager" />
 
     <bean
             class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"

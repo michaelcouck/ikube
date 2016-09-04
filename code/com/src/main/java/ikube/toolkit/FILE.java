@@ -510,13 +510,19 @@ public final class FILE {
         try {
             makeReadWrite(outputFile);
             fileOutputStream = new FileOutputStream(outputFile);
-            fileOutputStream.write(bytes, 0, bytes.length);
+            setContents(fileOutputStream, bytes);
         } catch (final FileNotFoundException e) {
             LOGGER.error("File " + outputFile + " not found", e);
-        } catch (final IOException e) {
-            LOGGER.error("IO exception writing file contents", e);
         } finally {
             close(fileOutputStream);
+        }
+    }
+
+    public static void setContents(final OutputStream outputStream, final byte[] bytes) {
+        try {
+            outputStream.write(bytes, 0, bytes.length);
+        } catch (final IOException e) {
+            LOGGER.error("IO exception writing file contents", e);
         }
     }
 

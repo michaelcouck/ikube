@@ -184,9 +184,10 @@
 
     <!-- This will initialize all the analyzers and build them in parallel. -->
     <bean
-        name="ikube.analytics.AnalyzerManager"
-        class="ikube.analytics.AnalyzerManager"
-        depends-on="ikube.toolkit.THREAD"/>
+            id="ikube.analytics.AnalyzerManager"
+            name="ikube.analytics.AnalyzerManager"
+            class="ikube.analytics.AnalyzerManager"
+            depends-on="ikube.toolkit.THREAD"/>
 
     <bean
         name="ikube.analytics.IAnalyticsService"
@@ -206,7 +207,6 @@
         <ref bean="ikube.scheduling.schedule.ActionSchedule"/>
         <ref bean="ikube.scheduling.schedule.SnapshotSchedule"/>
         <ref bean="ikube.scheduling.schedule.CpuLoadSchedule"/>
-        <ref bean="ikube.scheduling.schedule.IndexCommitSchedule"/>
         <ref bean="ikube.scheduling.schedule.IndexCommitSchedule"/>
         <ref bean="ikube.scheduling.schedule.AnalyzerSchedule"/>
         <ref bean="ikube.scheduling.schedule.PruneSchedule"/>

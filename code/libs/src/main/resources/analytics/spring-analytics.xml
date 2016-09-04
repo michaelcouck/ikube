@@ -81,16 +81,16 @@
 
         <property name="algorithms">
             <list>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
-                <value>weka.classifiers.bayes.NaiveBayesMultinomial</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
+                <value>weka.classifiers.functions.SMO</value>
             </list>
         </property>
 
@@ -208,6 +208,19 @@
             <array>
                 <ref local="neuroph-neural-network-model-row"/>
             </array>
+        </property>
+    </bean>
+
+    <bean
+            class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+            property:targetClass="ikube.analytics.AnalyzerManager"
+            property:targetMethod="buildAnalyzers"
+            property:targetObject-ref="ikube.analytics.AnalyzerManager">
+        <property name="arguments">
+            <map>
+                <entry key="context-em" value-ref="context-em" />
+                <entry key="context-smo" value-ref="context-smo" />
+            </map>
         </property>
     </bean>
 

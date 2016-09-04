@@ -1,9 +1,11 @@
 package ikube.analytics.weka;
 
 import com.google.common.collect.Lists;
+import ikube.IConstants;
 import ikube.analytics.AAnalyzer;
 import ikube.model.Analysis;
 import ikube.model.Context;
+import ikube.toolkit.FILE;
 import weka.classifiers.Classifier;
 import weka.clusterers.Clusterer;
 import weka.core.Attribute;
@@ -40,8 +42,8 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
      */
     @Override
     @SuppressWarnings("unchecked")
-    public synchronized void init(final Context context) throws Exception {
-        logger.warn("Analyzer context : " + context.getName() + " : " + context.hashCode());
+    public void init(final Context context) throws Exception {
+        logger.info("Init analyzer : " + context.getName());
         if (String.class.isAssignableFrom(context.getAnalyzer().getClass())) {
             context.setAnalyzer(Class.forName(context.getAnalyzer().toString()).newInstance());
         }
@@ -51,8 +53,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         for (int i = 0; algorithms != null && i < algorithms.length; i++) {
             Object algorithm = algorithms[i];
             String algorithmClass;
-            logger.warn("Building analyzer : " + algorithm.getClass());
-            logger.warn("                  : " + algorithm.toString());
+            logger.info("Building analyzer : " + algorithm.toString() + ", name : " + context.getName());
             if (algorithm.getClass().getName().equals(String.class.getName())) {
                 algorithmClass = (String) algorithm;
             } else {
@@ -94,7 +95,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
             if (filters != null && filters.length > i) {
                 filter = filters[i];
             }
-            Runnable builder = getAnalyzerBuilder(algorithms[i], (Instances) models[i], filter);
+            Runnable builder = getAnalyzerBuilder(context.getName(), algorithms[i], (Instances) models[i], filter);
             if (logger != null) {
                 logger.info("Analyzer : " + i + ":" + builder);
             }
@@ -114,7 +115,7 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
         context.setBuilt(Boolean.TRUE);
     }
 
-    private Runnable getAnalyzerBuilder(final Object analyzer, final Instances instances, final Filter filter) {
+    private Runnable getAnalyzerBuilder(final String name, final Object analyzer, final Instances instances, final Filter filter) {
         class AnalyzerBuilder implements Runnable {
             public void run() {
                 try {
@@ -126,9 +127,10 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         Clusterer clusterer = ((Clusterer) analyzer);
                         logger.info("Building clusterer : " + instances.numInstances());
                         clusterer.buildClusterer(filteredInstances);
+                        String evaluation = evaluate(clusterer, instances);
                         // evaluations[index] = evaluate(clusterer, instances);
                         // capabilities[index] = clusterer.getCapabilities().toString();
-                        logger.info("Clusterer built : " + filteredInstances.numInstances());
+                        logger.info("Clusterer built : " + name + ", evaluation : " + evaluation);
                     } else if (Classifier.class.isAssignableFrom(analyzer.getClass())) {
                         Classifier classifier = (Classifier) analyzer;
                         // And build the model
@@ -137,8 +139,12 @@ public abstract class WekaAnalyzer extends AAnalyzer<Analysis, Analysis, Analysi
                         logger.info("Classifier built : " + filteredInstances.numInstances());
                         // Set the evaluation of the classifier and the training model
                         // evaluations[index] = evaluate(classifier, filteredInstances);
-                        evaluate(classifier, filteredInstances);
+                        String evaluation = evaluate(classifier, filteredInstances);
                         // capabilities[index] = classifier.getCapabilities().toString();
+                        logger.info("Serializing classifier : " + name + ", evaluation : " + evaluation);
+                        File file = FILE.getOrCreateFile(IConstants.SERIALIZED_CLASSIFIERS_DIRECTORY + name);
+                        WekaToolkit.serialize(FILE.cleanFilePath(file.getAbsolutePath()), classifier);
+                        logger.info("Finished serializing classifier : " + name);
                     }
                 } catch (final Exception e) {
                     throw new RuntimeException(e);

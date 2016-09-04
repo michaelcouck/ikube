@@ -61,7 +61,7 @@ public class WekaClassifier extends WekaAnalyzer {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         if (!context.isBuilt()) {
             return analysis;
         }
@@ -73,6 +73,7 @@ public class WekaClassifier extends WekaAnalyzer {
         double highestProbability = -1.0;
         for (int i = 0; i < context.getAlgorithms().length; i++) {
             Classifier classifier = (Classifier) context.getAlgorithms()[i];
+
             Instances instances = (Instances) context.getModels()[i];
 
             // Create the instance from the data

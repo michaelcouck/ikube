@@ -7,11 +7,11 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.FILE;
 import ikube.toolkit.HASH;
+import ikube.toolkit.STRING;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashSet;
@@ -24,8 +24,11 @@ import java.util.StringTokenizer;
  * @version 01.00
  * @since 19-06-2013
  */
+@SuppressWarnings("ALL")
 public final class EmoticonClassificationStrategy extends AStrategy {
 
+    private boolean classification;
+    private OutputStream outputStream;
     private Set<Long> emoticonHashesPos;
     private Set<Long> emoticonHashesNeg;
 
@@ -35,18 +38,20 @@ public final class EmoticonClassificationStrategy extends AStrategy {
 
     public EmoticonClassificationStrategy(final IStrategy nextStrategy) {
         super(nextStrategy);
+        File file = FILE.getOrCreateFile(new File(IConstants.ANALYTICS_DIRECTORY + IConstants.SEP + "emoticon-twitter-training.arff"));
+        try {
+            outputStream = new FileOutputStream(file);
+        } catch (final FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean aroundProcess(
-        final IndexContext indexContext,
-        final Indexable indexable,
-        final Document document,
-        final Object resource)
-            throws Exception {
+    public boolean aroundProcess(final IndexContext indexContext, final Indexable indexable, final Document document,
+            final Object resource) throws Exception {
         // Remove duplicate or re-tweets?
         // Remove the @username strings?
         // Remove data with bi-polar sentiment, i.e. + and - emoticons
@@ -73,9 +78,21 @@ public final class EmoticonClassificationStrategy extends AStrategy {
                 if (positive > 0 && negative == 0) {
                     // Positive sentiment
                     IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.POSITIVE, indexable, document);
+                    if (classification) {
+                        StringBuilder labledTweet = new StringBuilder();
+                        labledTweet.append(IConstants.POSITIVE).append(",'").append(STRING.stripToAlphaNumeric(content, Boolean.FALSE)).append("'").append("\n");
+                        FILE.setContents(outputStream, labledTweet.toString().getBytes());
+                        classification = !classification;
+                    }
                 } else if (negative > 0 && positive == 0) {
                     // Negative sentiment
                     IndexManager.addStringField(IConstants.CLASSIFICATION, IConstants.NEGATIVE, indexable, document);
+                    if (!classification) {
+                        StringBuilder labledTweet = new StringBuilder();
+                        labledTweet.append(IConstants.NEGATIVE).append(",'").append(STRING.stripToAlphaNumeric(content, Boolean.FALSE)).append("'").append("\n");
+                        FILE.setContents(outputStream, labledTweet.toString().getBytes());
+                        classification = !classification;
+                    }
                 }
             }
         }

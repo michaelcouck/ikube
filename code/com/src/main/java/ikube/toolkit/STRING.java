@@ -153,7 +153,12 @@ public final class STRING {
      *                   the exclusions must be sorted lexically
      * @return the string sans the non-alphanumeric characters
      */
+    @SuppressWarnings("Duplicates")
     public static String stripToAlphaNumeric(final String content, final char... exclusions) {
+        return stripToAlphaNumeric(content, Boolean.TRUE, exclusions);
+    }
+
+    public static String stripToAlphaNumeric(final String content, final boolean numeric, final char... exclusions) {
         if (!StringUtils.isEmpty(content)) {
             StringBuilder builder = new StringBuilder();
             char previous = SPACE;
@@ -164,7 +169,7 @@ public final class STRING {
                     if (previous != SPACE) {
                         append = Boolean.TRUE;
                     }
-                } else if (Character.isAlphabetic(c) || Character.isDigit(c)) {
+                } else if (Character.isAlphabetic(c) || (numeric && Character.isDigit(c))) {
                     append = Boolean.TRUE;
                 } else {
                     if (Arrays.binarySearch(exclusions, c) >= 0) {

@@ -264,7 +264,7 @@ public final class WekaToolkit {
      * @return a filtered instances, potentially a new instance
      * @throws Exception anything and everything, let the caller handle if necessary
      */
-    public static synchronized Instances filter(final Instances instances, final Filter filter) throws Exception {
+    public static Instances filter(final Instances instances, final Filter filter) throws Exception {
         Instances filteredInstances = instances;
         if (filter != null) {
             filter.setInputFormat(filteredInstances);
@@ -300,7 +300,7 @@ public final class WekaToolkit {
                 }
             }
         });
-        LOGGER.warn("Duration for cross validation : " + duration);
+        LOGGER.info("Duration for cross validation : " + duration);
         return evaluation.relativeAbsoluteError();
     }
 
@@ -315,6 +315,22 @@ public final class WekaToolkit {
         clusterEvaluation.setClusterer(clusterer);
         clusterEvaluation.evaluateClusterer(instances);
         return clusterEvaluation.clusterResultsToString();
+    }
+
+    public static void serialize(final String name, final Classifier classifier) {
+        try {
+            SerializationHelper.write(name, classifier);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Classifier deserialize(final String name) {
+        try {
+            return (Classifier) SerializationHelper.read(name);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private WekaToolkit() {

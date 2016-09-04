@@ -272,7 +272,7 @@ public final class THREAD {
      * This method will destroy the thread pool. All threads that are currently running will be interrupted,
      * and should catch this exception and exit the run method.
      */
-    public static synchronized void destroy() {
+    public static void destroy() {
         if (EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown() || FUTURES == null || FORK_JOIN_POOLS == null) {
             LOGGER.debug("Executor service already shutdown : ");
             return;

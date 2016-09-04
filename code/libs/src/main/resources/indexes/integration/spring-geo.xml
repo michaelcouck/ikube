@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:property="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util"
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <description>
+        This file is not to be modified by users generally. This is the configuration for the geospatial
+        index which is an index of the geonames table on the Ikube server.
+    </description>
+
+    <bean
+        id="geospatial"
+        class="ikube.model.IndexContext"
+        property:name="geospatial"
+        property:maxAge="${max.age.geospatial}"
+        property:compoundFile="${compound.file}"
+        property:bufferedDocs="${buffered.docs}"
+        property:bufferSize="${buffer.size}"
+        property:batchSize="${jdbc.batch.size}"
+        property:internetBatchSize="${internet.batch.size}"
+        property:mergeFactor="${merge.factor}"
+        property:maxFieldLength="${max.field.length}"
+        property:maxReadLength="${max.read.length}"
+        property:address="true"
+        property:throttle="0"
+        property:indexDirectoryPath="${index.directory.path}"
+        property:indexDirectoryPathBackup="${index.directory.path.backup}"
+        property:children-ref="geospatialIndexables"
+        property:strategies-ref="geoname-strategies"/>
+    <!-- property:analyzer-ref="ikube.action.index.analyzer.EdgeNgramAnalyzer" -->
+    <util:list id="geospatialIndexables">
+        <ref local="geoname"/>
+    </util:list>
+
+    <bean
+        id="geoname"
+        class="ikube.model.IndexableTable"
+        property:name="geoname"
+        property:address="true"
+        property:maxExceptions="10"
+        property:threads="4"
+        property:allColumns="false"
+
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="false"
+        property:omitNorms="true"
+
+        property:children-ref="geonameColumns"
+        property:dataSource-ref="nonXaDataSourceOracle"
+        property:strategies-ref="geoname-strategies"/>
+    <util:list id="geonameColumns">
+        <ref local="geospatialId"/>
+        <ref local="geospatialName"/>
+        <ref local="geospatialAsciiname"/>
+        <ref local="geospatialAlternatenames"/>
+        <ref local="geospatialLatitude"/>
+        <ref local="geospatialLongitude"/>
+        <ref local="geospatialTimezone"/>
+        <ref local="geospatialGeonameid"/>
+        <ref local="geospatialPopulation"/>
+        <ref local="geospatialElevation"/>
+    </util:list>
+    <util:list id="geoname-strategies">
+        <!-- We don't need language detection on these fields, takes up too much space. -->
+        <!--<ref bean="ikube.action.index.handler.strategy.LanguageDetectionStrategy"/>-->
+        <bean
+            class="ikube.action.index.handler.strategy.GeospatialEnrichmentStrategy"
+            init-method="initialize"/>
+    </util:list>
+
+    <bean
+        id="ikube.model.Indexable"
+        class="ikube.model.Indexable"
+        abstract="true"
+        property:stored="true"
+        property:analyzed="true"
+        property:vectored="false"
+        property:omitNorms="true"/>
+
+    <bean
+        id="geospatialId"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="id"
+        property:idColumn="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialName"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="name"
+        property:fieldName="name"
+        property:address="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialGeonameid"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="geonameid"
+        property:fieldName="geonameid"
+        property:numeric="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialAsciiname"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="asciiname"
+        property:fieldName="asciiname"
+        property:address="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialAlternatenames"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="alternatenames"
+        property:fieldName="alternatenames"
+        property:address="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialLatitude"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="latitude"
+        property:fieldName="latitude"
+        property:numeric="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialLongitude"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="longitude"
+        property:fieldName="longitude"
+        property:numeric="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialPopulation"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="population"
+        property:fieldName="population"
+        property:numeric="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialElevation"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="elevation"
+        property:fieldName="elevation"
+        property:numeric="true"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialTimezone"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="timezone"
+        property:fieldName="timezone"
+        property:omitNorms="true"/>
+    <bean
+        id="geospatialModification"
+        parent="ikube.model.Indexable"
+        class="ikube.model.IndexableColumn"
+        property:name="modification"
+        property:fieldName="modification"
+        property:omitNorms="true"/>
+
+</beans>

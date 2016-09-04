@@ -38,7 +38,7 @@ public class WekaClusterer extends WekaAnalyzer {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public synchronized Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
+    public Analysis<Object, Object> analyze(final Context context, final Analysis analysis) throws Exception {
         if (!context.isBuilt()) {
             return analysis;
         }
