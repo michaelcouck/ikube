@@ -246,7 +246,7 @@ public final class FILE {
                 try {
                     String parentPath = cleanFilePath(parent.getAbsolutePath());
                     File createdFile = new File(parentPath, file.getName());
-                    LOGGER.info("Creating file : " + file.getAbsolutePath());
+                    LOGGER.debug("Creating file : " + file.getAbsolutePath());
                     createdFile.createNewFile();
                     return createdFile;
                 } catch (final IOException e) {
@@ -271,7 +271,7 @@ public final class FILE {
                 return directory;
             }
             String directoryPath = cleanFilePath(directory.getPath());
-            LOGGER.info("Creating directory : " + directoryPath);
+            LOGGER.debug("Creating directory : " + directoryPath);
             File createdDirectory = new File(directoryPath);
             boolean created = createdDirectory.mkdirs();
             if (!created || !directory.exists()) {
@@ -388,7 +388,8 @@ public final class FILE {
         return deleteFile(file, maxRetryCount, 0);
     }
 
-    private static void makeReadWrite(final File file) {
+    @SuppressWarnings("WeakerAccess")
+    public static void makeReadWrite(final File file) {
         boolean readable = file.setReadable(true, false);
         boolean writable = file.setWritable(true, false);
         if (!readable || !writable) {
