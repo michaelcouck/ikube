@@ -1,20 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>ikube-war</artifactId>
-	<packaging>war</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ikube-war</artifactId>
+    <packaging>war</packaging>
 
-	<parent>
-		<groupId>ikube</groupId>
-		<artifactId>ikube</artifactId>
+    <parent>
+        <groupId>ikube</groupId>
+        <artifactId>ikube</artifactId>
         <version>5.3.1</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
-	
-	<properties>
-		<webapps>webapps</webapps>
-		<final.name>${project.build.finalName}.${project.packaging}</final.name>
-		<maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <webapps>webapps</webapps>
+        <final.name>${project.build.finalName}.${project.packaging}</final.name>
+        <maven.build.timestamp.format>dd-MM-yyyy HH:mm:ss</maven.build.timestamp.format>
 
         <jetty-version>7.6.15.v20140411</jetty-version>
         <!--<jetty-version>9.0.5</jetty-version>-->
@@ -27,81 +28,83 @@
             -Dcom.sun.management.jmxremote.authenticate=false
             -Dcom.sun.management.jmxremote.ssl=false
         </jetty-jmx-args>
-        <jetty-jvm-args>-Djava.awt.headless=true -XX:PermSize=1024m -XX:MaxPermSize=4096m -Xms6144m -Xmx12288m -XX:HeapDumpPath=/tmp -XX:+CMSClassUnloadingEnabled</jetty-jvm-args>
-	</properties>
+        <jetty-jvm-args>-Djava.awt.headless=true -XX:PermSize=1024m -XX:MaxPermSize=4096m -Xms6144m -Xmx12288m
+            -XX:HeapDumpPath=/tmp -XX:+CMSClassUnloadingEnabled
+        </jetty-jvm-args>
+    </properties>
 
-	<build>
-	    <finalName>ikube</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-		<plugins>
+    <build>
+        <finalName>ikube</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
-			<!-- The default plugin for creating the war, we specify a version. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
-				<!--
-				 We need to add this because
-				 -->
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
-					</archive>
-					<webResources>
-						<resource>
-							<!-- This is relative to the pom.xml directory -->
-							<directory>${project.basedir}/src/main/resources</directory>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-			<!-- 
-				This plugin reads the properties from the build.properties file and makes them all available
-				to the rest of the Maven build process. 
-			-->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0-alpha-1</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>../../build.properties</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+            <!-- The default plugin for creating the war, we specify a version. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <!--
+                 We need to add this because
+                 -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <webResources>
+                        <resource>
+                            <!-- This is relative to the pom.xml directory -->
+                            <directory>${project.basedir}/src/main/resources</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <!--
+                This plugin reads the properties from the build.properties file and makes them all available
+                to the rest of the Maven build process.
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>../../build.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!--
-				This plugin starts a Jetty server before the integration tests and stops it after the
-				integration tests. It can also be used to start a jetty server from the command line for testing. 
-			-->
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty-version}</version>
-				<!--<version>8.1.16.v20140903</version>-->
-				<configuration>
-					<stopKey>${jetty-stop-key}</stopKey>
-					<stopPort>${jetty-stop-port}</stopPort>
+            <!--
+                This plugin starts a Jetty server before the integration tests and stops it after the
+                integration tests. It can also be used to start a jetty server from the command line for testing.
+            -->
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty-version}</version>
+                <!--<version>8.1.16.v20140903</version>-->
+                <configuration>
+                    <stopKey>${jetty-stop-key}</stopKey>
+                    <stopPort>${jetty-stop-port}</stopPort>
                     <!--<waitForChild>false</waitForChild>-->
                     <jvmArgs>${jetty-jvm-args}</jvmArgs>
                     <scanIntervalSeconds>10000</scanIntervalSeconds>
@@ -109,20 +112,20 @@
                         <contextPath>/ikube</contextPath>
                     </webApp>
                     <connectors>
-						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>9090</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-					</connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>9090</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
                 </configuration>
-				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<!--<phase>pre-integration-test</phase>-->
-						<phase>site</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <!--<phase>pre-integration-test</phase>-->
+                        <phase>site</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                         <configuration>
                             <!--
                                 To run in forked mode this causes H2 to complain that the database is locked
@@ -132,71 +135,83 @@
                             <!--<waitForChild>false</waitForChild>-->
                             <daemon>true</daemon>
                         </configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>ikube</groupId>
-			<artifactId>ikube-core</artifactId>
-			<version>${ikube-version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.0</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-			<version>1.1.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-jsp</artifactId>
-			<version>2.2.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-template</artifactId>
-			<version>2.2.0</version>
-			<scope>compile</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>ikube</groupId>
+            <artifactId>ikube-core</artifactId>
+            <version>${ikube-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-jsp</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-template</artifactId>
+            <version>2.2.0</version>
+        </dependency>
         <dependency>
             <groupId>tomgibara</groupId>
             <artifactId>cluster-gvm</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-core</artifactId>
+            <version>1.0.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito-all-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit-version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -3,6 +3,9 @@ package ikube.zip;
 import de.schlichtherle.truezip.file.TFile;
 import ikube.toolkit.FILE;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentFactory;
+import org.dom4j.Element;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +26,7 @@ public class CompareEars {
     static String[] mavenizedEarFiles = {
             "BTMUApp-5.6.1.ear",
             "BTMUInterfacingSimulatorEAR-5.6.1.ear",
-            "BTMUProcess-5.6.1.ear",
+            "BTMUProcessEAR-5.6.1.ear",
             "BTMUTestApp-5.6.1.ear",
             "BTMUUnitTestEAR-5.6.1.ear",
             "JP1ClientEAR-5.6.1.ear",
@@ -48,9 +51,22 @@ public class CompareEars {
         Set<String> sourceEntries = getZipEntries(sourceZipFile, new TreeSet<String>());
         Set<String> targetEntries = getZipEntries(targetZipFile, new TreeSet<String>());
         System.out.println("Source not in target : " + sourceZipFile.getName());
+        Document document = DocumentFactory.getInstance().createDocument();
+        Element root = document.addElement("root");
+        System.out.println(document.asXML());
         for (final String sourceZipEntry : sourceEntries) {
             if (!targetEntries.contains(sourceZipEntry)) {
-                System.out.println("        : " + sourceZipEntry);
+                Element dependency = root.addElement("dependency");
+                Element groupId = dependency.addElement("groupId");
+                groupId.setText("fill-in");
+                Element artifactId = dependency.addElement("artifactId");
+                Element version = dependency.addElement("version");
+                version.setText("fill-in");
+
+                artifactId.setText(sourceZipEntry);
+                // System.out.println("        : " + sourceZipEntry);
+
+                System.out.println(dependency.asXML());
             }
         }
     }
