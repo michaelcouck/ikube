@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
     <groupId>ikube</groupId>
 	<artifactId>ikube-web</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
     <scm>
