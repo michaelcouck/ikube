@@ -34,7 +34,7 @@ public class CompareEars {
     };
 
     public static void main(final String[] args) throws IOException {
-        int increment = 2;
+        int increment = 0;
         for (int i = increment; i < increment + 1; i++) {
             String sourceFile = originalEarFiles[i];
             String targetFile = mavenizedEarFiles[i];
@@ -75,9 +75,9 @@ public class CompareEars {
     private static Set<String> getZipEntries(final TFile parentTFile, final Set<String> zipEntries) {
         // Set<String> zipEntries = new TreeSet<String>();
         for (final TFile childTFile : parentTFile.listFiles()) {
-            boolean isDirArcJarorWar = childTFile.isDirectory() || childTFile.isArchive() ||
+            boolean isDirArcJarOrWar = childTFile.isDirectory() || childTFile.isArchive() ||
                     childTFile.getName().endsWith(".jar") || childTFile.getName().endsWith(".war");
-            if (isDirArcJarorWar) {
+            if (isDirArcJarOrWar) {
                 if (childTFile.getName().endsWith(".jar") || childTFile.getName().endsWith(".war")) {
                     String fileName = StringUtils.substringBefore(childTFile.getName(), ".");
                     fileName = StringUtils.substringBefore(fileName, "-");

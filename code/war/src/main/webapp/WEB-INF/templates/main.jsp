@@ -20,7 +20,7 @@
 	<link rel="shortcut icon" href="<c:url value="/assets/images/icons/favicon_32x32.ico" />">
 	
 	<meta name="Description" content="Ikube High Volume Analytics and Enterprise Search platform." />
-	<meta name="Keywords" content="Ikube, Enterprise Analytics, AaaS, Enterprise Search, Web Site Search, Database Search, Network Search,
+	<meta name="Keywords" content="Ikube, Enterprise Analytics, AaaS, Enterprise Search, Web Site SeaOSrch, Database Search, Network Search,
 	    High Volume, Data Mining, Analytics, Machine Learning" />
 	
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css">

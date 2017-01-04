@@ -33,8 +33,8 @@ public class ZipLocator {
 
     public static void main(final String[] args) {
         if (args == null || args.length < 3) {
-            System.out.println("Usage : java -jar ikube-xxx....jar [path/to/folder] [zip-patterns] [file pattern] [contents pattern]");
-            System.out.println("example : java -jar ikube-tool-4.4.0.jar /tmp .*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).* SerenityPublisher");
+            System.out.println("Usage : java -jar ikube-xxx....jar [class-to-execute] [path/to/folder] [zip-patterns] [file pattern] [contents pattern]");
+            System.out.println("example : java -jar ikube-tool-4.4.0.jar ikube.zip.ZipLocator /tmp .*(\\.zip\\Z).*|.*(\\.jar\\Z).*|.*(\\.war\\Z).*|.*(\\.ear\\Z).* SerenityPublisher");
             return;
         }
         final String path = args[0];

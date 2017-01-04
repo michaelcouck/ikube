@@ -23,24 +23,12 @@ public class RESTTest {
 
     @Test
     public void rest() throws InterruptedException {
-        // REST.doPost("http://mec-nft-app5.clear2pay.com:8090/SHARPy/rest/projects/", "CS_CLIENT", Object.class);
         Client client = Client.create();
-        WebResource webResource = client.resource("http://mec-nft-app5.clear2pay.com:8090/SHARPy/rest/projects/");
+        WebResource webResource = client.resource("http://your-url-here:8090/path/to/rest/service");
         MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
-        formData.add("project", "CS_CLIENT");
+        formData.add("parameter-one", "parameter-value-one");
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class, formData);
         System.out.println(response);
-    }
-
-    @Test
-    public void create() {
-        //String url = "http://mec-nft-app5.clear2pay.com:8090/SHARPy/rest";
-        //javax.ws.rs.client.Client client = ClientBuilder.newClient().register(new HTTPBasicAuthFilter("admin", "password"));
-        //WebTarget targetProject = client.target(url).path("projects/");
-        //MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
-        //formData.add("project", "CS_CLIENT");
-        //Response respProject = targetProject.request().post(Entity.form(formData));
-        //System.out.println(respProject);
     }
 
 }

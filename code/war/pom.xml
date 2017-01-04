@@ -28,9 +28,7 @@
             -Dcom.sun.management.jmxremote.authenticate=false
             -Dcom.sun.management.jmxremote.ssl=false
         </jetty-jmx-args>
-        <jetty-jvm-args>-Djava.awt.headless=true -XX:PermSize=1024m -XX:MaxPermSize=4096m -Xms6144m -Xmx12288m
-            -XX:HeapDumpPath=/tmp -XX:+CMSClassUnloadingEnabled
-        </jetty-jvm-args>
+        <jetty-jvm-args>-Djava.awt.headless=true -XX:PermSize=1024m -XX:MaxPermSize=4096m -Xms6144m -Xmx8096m -XX:HeapDumpPath=/tmp -XX:+CMSClassUnloadingEnabled</jetty-jvm-args>
     </properties>
 
     <build>
