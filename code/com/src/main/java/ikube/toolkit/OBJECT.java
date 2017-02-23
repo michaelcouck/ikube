@@ -3,13 +3,10 @@ package ikube.toolkit;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.Id;
 import java.lang.reflect.*;
 import java.util.*;
-
-import static org.springframework.util.ReflectionUtils.*;
 
 /**
  * This class has utility methods to generate object graphs for testing.
@@ -84,17 +81,17 @@ public final class OBJECT {
         if (depth > maxDepth) {
             return null;
         }
-        FieldFilter fieldFilter = getFieldFilter();
-        FieldCallback fieldCallback = getFieldCallback(target, collections, depth, maxDepth, excludedFields);
-        doWithFields(klass, fieldCallback, fieldFilter);
+        ReflectionUtils.FieldFilter fieldFilter = getFieldFilter();
+        ReflectionUtils.FieldCallback fieldCallback = getFieldCallback(target, collections, depth, maxDepth, excludedFields);
+        ReflectionUtils.doWithFields(klass, fieldCallback, fieldFilter);
         if (!Object.class.equals(klass.getSuperclass())) {
             populateFields(klass.getSuperclass(), target, collections, depth, maxDepth, excludedFields);
         }
         return target;
     }
 
-    private static FieldFilter getFieldFilter() {
-        return new FieldFilter() {
+    private static ReflectionUtils.FieldFilter getFieldFilter() {
+        return new ReflectionUtils.FieldFilter() {
             @Override
             public boolean matches(final Field field) {
                 // We don't set the fields that are static, final
@@ -104,8 +101,8 @@ public final class OBJECT {
         };
     }
 
-    private static FieldCallback getFieldCallback(final Object target, final Boolean collections, final int depth, final int maxDepth, final String... excludedFields) {
-        class ObjectCreatorFieldCallback implements FieldCallback {
+    private static ReflectionUtils.FieldCallback getFieldCallback(final Object target, final Boolean collections, final int depth, final int maxDepth, final String... excludedFields) {
+        class ObjectCreatorFieldCallback implements ReflectionUtils.FieldCallback {
             @Override
             @SuppressWarnings({"rawtypes", "unchecked"})
             public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
@@ -287,7 +284,7 @@ public final class OBJECT {
     }
 
     public static Field getField(final Object target, final String fieldName) {
-        Field field = findField(target.getClass(), fieldName);
+        Field field = ReflectionUtils.findField(target.getClass(), fieldName);
         field.setAccessible(Boolean.TRUE);
         return field;
     }
@@ -319,7 +316,7 @@ public final class OBJECT {
     }
 
     public static void setField(final Object target, final String fieldName, final Object fieldValue) {
-        Field field = findField(target.getClass(), fieldName);
+        Field field = ReflectionUtils.findField(target.getClass(), fieldName);
         boolean accessible = field.isAccessible();
         field.setAccessible(Boolean.TRUE);
         if (Modifier.isFinal(field.getModifiers())) {

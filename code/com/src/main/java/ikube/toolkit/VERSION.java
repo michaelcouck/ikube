@@ -4,7 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.InputStream;
 import java.util.List;
@@ -55,8 +54,7 @@ public class VERSION {
         String pomPropertiesFile = "META-INF/maven/ikube/ikube-core/pom.properties";
         InputStream inputStream = null;
         try {
-            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, VERSION.class.getClassLoader());
-            inputStream = classPathResource.getInputStream();
+            inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(pomPropertiesFile);
             Properties properties = new Properties();
             properties.load(inputStream);
             VERSION = properties.getProperty("version");
@@ -73,8 +71,7 @@ public class VERSION {
         }
 
         try {
-            ClassPathResource classPathResource = new ClassPathResource(pomPropertiesFile, VERSION.class.getClassLoader());
-            inputStream = classPathResource.getInputStream();
+            inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(pomPropertiesFile);
             List<String> lines = IOUtils.readLines(inputStream);
             TIMESTAMP = lines.get(1).replaceAll("#", "");
         } catch (final Exception e) {
