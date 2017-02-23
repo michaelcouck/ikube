@@ -3,7 +3,7 @@ package ikube.action.rule;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FILE;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.junit.After;
@@ -22,36 +22,36 @@ import static org.junit.Assert.assertTrue;
  */
 public class DirectoryExistsAndIsLockedTest extends AbstractTest {
 
-	private DirectoryExistsAndIsLocked existsAndIsLocked;
+    private DirectoryExistsAndIsLocked existsAndIsLocked;
 
-	@Before
-	public void before() {
-		existsAndIsLocked = new DirectoryExistsAndIsLocked();
-	}
+    @Before
+    public void before() {
+        existsAndIsLocked = new DirectoryExistsAndIsLocked();
+    }
 
-	@After
-	public void after() {
-		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-	}
+    @After
+    public void after() {
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
 
     @Test
     @SuppressWarnings("ConstantConditions")
-	public void evaluate() throws Exception {
-		boolean existsAndIsLockedResult = existsAndIsLocked.evaluate(new File(indexContext.getIndexDirectoryPath()));
-		assertFalse(existsAndIsLockedResult);
+    public void evaluate() throws Exception {
+        boolean existsAndIsLockedResult = existsAndIsLocked.evaluate(new File(indexContext.getIndexDirectoryPath()));
+        assertFalse(existsAndIsLockedResult);
 
-		createIndexFileSystem(indexContext, "Hello world");
+        createIndexFileSystem(indexContext, "Hello world");
 
-		File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-		File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
-		existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
-		assertFalse(existsAndIsLockedResult);
+        File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+        File indexDirectory = new File(latestIndexDirectory, URI.getIp());
+        existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
+        assertFalse(existsAndIsLockedResult);
 
         try (Lock ignored = getLock(FSDirectory.open(indexDirectory), indexDirectory)) {
             existsAndIsLockedResult = existsAndIsLocked.evaluate(indexDirectory);
             assertTrue(existsAndIsLockedResult);
         }
 
-	}
+    }
 
 }

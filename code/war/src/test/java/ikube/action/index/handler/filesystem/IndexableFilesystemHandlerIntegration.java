@@ -11,7 +11,7 @@ import ikube.search.Search;
 import ikube.search.SearchComplex;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.junit.After;
@@ -60,7 +60,7 @@ public class IndexableFilesystemHandlerIntegration extends IntegrationTest {
 
         FILE.deleteFile(new File(desktop.getIndexDirectoryPath()));
 
-        IndexWriter indexWriter = openIndexWriter(desktop, System.currentTimeMillis(), UriUtilities.getIp());
+        IndexWriter indexWriter = openIndexWriter(desktop, System.currentTimeMillis(), URI.getIp());
         desktop.setIndexWriters(indexWriter);
     }
 

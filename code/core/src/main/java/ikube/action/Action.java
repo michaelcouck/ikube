@@ -6,7 +6,7 @@ import ikube.cluster.IClusterManager;
 import ikube.database.IDataBase;
 import ikube.model.IndexContext;
 import ikube.toolkit.IMailer;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.commons.jexl2.JexlEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,7 +204,7 @@ public abstract class Action<E, F> implements IAction<IndexContext, Boolean> {
      */
     protected void sendNotification(final String subject, final String body) {
         try {
-            String ip = UriUtilities.getIp();
+            String ip = URI.getIp();
             mailer.sendMail(subject + ":" + ip, body);
         } catch (final Exception e) {
             logger.error("Exception sending mail : " + subject + ", " + e.getMessage(), e);

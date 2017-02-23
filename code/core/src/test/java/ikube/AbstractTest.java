@@ -152,7 +152,7 @@ public abstract class AbstractTest {
         indexables = new ArrayList<>();
         indexContexts = new HashMap<>();
 
-        ip = UriUtilities.getIp();
+        ip = URI.getIp();
         address = ip + "-8000";
 
         topDocs.totalHits = 0;

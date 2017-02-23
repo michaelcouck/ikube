@@ -108,4 +108,6 @@ public interface Constants {
         .addSerializationExclusionStrategy(new IdExclusionStrategy())
         .addDeserializationExclusionStrategy(new IdExclusionStrategy())
         .create();
+
+    double MILLION = 1000000;
 }

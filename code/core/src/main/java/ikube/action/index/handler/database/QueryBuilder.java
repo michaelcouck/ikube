@@ -6,7 +6,7 @@ import com.truemesh.squiggle.Table;
 import ikube.model.Indexable;
 import ikube.model.IndexableColumn;
 import ikube.model.IndexableTable;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -107,7 +107,7 @@ public final class QueryBuilder {
         IndexableColumn idIndexableColumn = getIdColumn(indexableTable.getChildren());
         selectQuery.addCriteria(new MatchCriteria(table, idIndexableColumn.getName(), MatchCriteria.GREATEREQUAL, nextIdNumber));
         selectQuery.addCriteria(new MatchCriteria(table, idIndexableColumn.getName(), MatchCriteria.LESS, nextIdNumber + batchSize));
-        return UriUtilities.stripCarriageReturn(selectQuery.toString()).toLowerCase();
+        return URI.stripCarriageReturn(selectQuery.toString()).toLowerCase();
     }
 
     void buildQuery(final SelectQuery selectQuery, final Table parentTable, final Table table, final IndexableTable indexableTable) {

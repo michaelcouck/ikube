@@ -19,7 +19,7 @@ public class UriUtilitiesTest extends AbstractTest {
     public void url() throws Exception {
         URI baseUri = new URI("http://www.ikokoon.eu/ikokoon/index.html?language=russian");
         String reference = "/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian";
-        String resolved = UriUtilities.resolve(baseUri, reference);
+        String resolved = ikube.toolkit.URI.resolve(baseUri, reference);
         logger.info("Resolved : " + resolved);
 
         String string = baseUri.getAuthority();
@@ -46,7 +46,7 @@ public class UriUtilitiesTest extends AbstractTest {
         logger.info("Uri : " + uri);
 
         reference = "http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DDCEF2D6525AA946B529817214E?language=russian";
-        resolved = UriUtilities.resolve(baseUri, reference);
+        resolved = ikube.toolkit.URI.resolve(baseUri, reference);
         logger.info("Resolved : " + resolved);
 
         // ;jsessionid=(.*)
@@ -75,17 +75,17 @@ public class UriUtilitiesTest extends AbstractTest {
     @Test
     public void strip() {
         String url = "http://www.ikokoon.eu/ikokoon/index.html#anchor";
-        String stripped = UriUtilities.stripAnchor(url, "");
+        String stripped = ikube.toolkit.URI.stripAnchor(url, "");
         logger.info("Stripped : " + stripped);
         assertFalse(stripped.contains("#"));
 
         url = "http://www.ikokoon.eu/ikokoon/index.html?query=string#anchor";
-        stripped = UriUtilities.stripAnchor(url, "");
+        stripped = ikube.toolkit.URI.stripAnchor(url, "");
         logger.info("Stripped : " + stripped);
         assertFalse(stripped.contains("#"));
 
         url = "http://www.ikokoon.eu/ikokoon/#anchor?can=the&query=string&be=here";
-        stripped = UriUtilities.stripAnchor(url, "");
+        stripped = ikube.toolkit.URI.stripAnchor(url, "");
         logger.info("Stripped : " + stripped);
         assertFalse(stripped.contains("#"));
     }
@@ -93,25 +93,25 @@ public class UriUtilitiesTest extends AbstractTest {
     @Test
     public void isExcluded() {
         String string = "JavaScript:";
-        assertTrue(UriUtilities.isExcluded(string));
+        assertTrue(ikube.toolkit.URI.isExcluded(string));
 
         string = "javascript:¨var someVar = null;";
-        assertTrue(UriUtilities.isExcluded(string));
+        assertTrue(ikube.toolkit.URI.isExcluded(string));
 
         string = "not a javascript link";
-        assertFalse(UriUtilities.isExcluded(string));
+        assertFalse(ikube.toolkit.URI.isExcluded(string));
     }
 
     @Test
     public void resolve() {
         URI baseURI = URI.create("http://www.ikokoon.eu/ikokoon/info/about.html;jsessionid=96069DD?language=russian");
         String reference = "/ikokoon/software/free.html;jsessionid=96069DD?language=english";
-        String resolved = UriUtilities.resolve(baseURI, reference);
+        String resolved = ikube.toolkit.URI.resolve(baseURI, reference);
         logger.info("Resolved : " + resolved);
         assertEquals("http://www.ikokoon.eu/ikokoon/software/free.html;jsessionid=96069DD?language=english", resolved.toString());
 
         reference = "../free.html;jsessionid=96069DD?language=english";
-        resolved = UriUtilities.resolve(baseURI, reference);
+        resolved = ikube.toolkit.URI.resolve(baseURI, reference);
         logger.info("Resolved : " + resolved);
         assertEquals("http://www.ikokoon.eu/ikokoon/free.html;jsessionid=96069DD?language=english", resolved.toString());
     }
@@ -120,14 +120,14 @@ public class UriUtilitiesTest extends AbstractTest {
     public void stripBlanks() {
         String url = "http://www.google.be/support/googleanalytics/bin/answer.py?answer=81977&cbid=1ervhd4u13k8d&src=cb&lev= index";
         String expected = "http://www.google.be/support/googleanalytics/bin/answer.py?answer=81977&cbid=1ervhd4u13k8d&src=cb&lev=index";
-        String stripped = UriUtilities.stripBlanks(url);
+        String stripped = ikube.toolkit.URI.stripBlanks(url);
         assertEquals(expected, stripped);
     }
 
     @Test
     public void stripCarriageReturn() {
         String string = "\r\nAnd the string. \n\r";
-        String stripped = UriUtilities.stripCarriageReturn(string);
+        String stripped = ikube.toolkit.URI.stripCarriageReturn(string);
         logger.debug("Stripped : " + stripped);
         assertEquals("And the string. ", stripped);
     }
@@ -136,20 +136,20 @@ public class UriUtilitiesTest extends AbstractTest {
     public void removeDotSegments() throws Exception {
         String string = "http://www.google.com/ikube/./ikube/./svn/./java";
         URI uri = new URI(string);
-        URI strippedUri = UriUtilities.removeDotSegments(uri);
+        URI strippedUri = ikube.toolkit.URI.removeDotSegments(uri);
         logger.info("Stripped uri : " + strippedUri);
         assertEquals("http://www.google.com/ikube/ikube/svn/java", strippedUri.toString());
 
         string = "http://www.google.com/ikube/../ikube/./svn/../java";
         uri = new URI(string);
-        strippedUri = UriUtilities.removeDotSegments(uri);
+        strippedUri = ikube.toolkit.URI.removeDotSegments(uri);
         logger.info("Stripped uri : " + strippedUri);
         assertEquals("http://www.google.com/ikube/java", strippedUri.toString());
     }
 
     @Test
     public void getIp() throws Exception {
-        String ipAddress = UriUtilities.getIp();
+        String ipAddress = ikube.toolkit.URI.getIp();
         assertFalse(ipAddress.equals("127.0.0.1"));
         assertFalse(ipAddress.equals("127.0.1.1"));
     }

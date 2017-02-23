@@ -1,7 +1,6 @@
 package ikube.toolkit;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -25,7 +24,7 @@ public class CSV {
     }
 
     public static Object[][] getCsvData(final InputStream inputStream, final int... excludedColumns) {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream);) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             CSVReader csvReader = new CSVReader(inputStreamReader);
             List<String[]> lines = csvReader.readAll();
             Object[][] matrix = new Object[lines.size()][];
@@ -40,7 +39,7 @@ public class CSV {
         }
     }
 
-    public static String[] excludeColumns(final String[] inputValues, final int... excludedColumns) {
+    private static String[] excludeColumns(final String[] inputValues, final int... excludedColumns) {
         if (excludedColumns != null && excludedColumns.length > 0) {
             String[] strippedRow = new String[inputValues.length - excludedColumns.length];
             for (int j = 0, k = 0; j < inputValues.length; j++) {
@@ -51,14 +50,6 @@ public class CSV {
             return strippedRow;
         }
         return inputValues;
-    }
-
-    public static void setCsvData(final String[] outputValues, final File outputFile, boolean append) {
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(outputFile, append))) {
-            csvWriter.writeNext(outputValues);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

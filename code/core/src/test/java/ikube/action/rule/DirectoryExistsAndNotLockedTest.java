@@ -3,7 +3,7 @@ package ikube.action.rule;
 import ikube.AbstractTest;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FILE;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Lock;
 import org.junit.After;
@@ -46,7 +46,7 @@ public class DirectoryExistsAndNotLockedTest extends AbstractTest {
         createIndexFileSystem(indexContext, "Hello world");
 
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-        indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
+        indexDirectory = new File(latestIndexDirectory, URI.getIp());
         existsAndNotLocked = this.existsAndNotLocked.evaluate(indexDirectory);
         assertTrue(existsAndNotLocked);
 

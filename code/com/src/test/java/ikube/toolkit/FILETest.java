@@ -79,22 +79,11 @@ public class FILETest extends AbstractTest {
         files = FILE.findFilesRecursively(dotFolder, files, ".xml");
         assertTrue(files.size() >= 1);
 
-        List<File> properties = FILE.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.properties");
-        List<File> configurations = FILE.findFilesRecursively(dotFolder, new ArrayList<File>(), "spring.*.xml");
+        List<File> properties = FILE.findFilesRecursively(dotFolder, new ArrayList<File>(), "doctors.xml");
 
         logger.error("Properties : " + properties.size() + ", " + properties);
-        logger.error("Configurations : " + configurations.size() + ", " + configurations);
 
-        try {
-            assertTrue(properties.size() > 0);
-            assertTrue(configurations.size() > 0);
-        } catch (final Throwable e) {
-            if (OS.isOs("3.11.0-12-generic")) {
-                throw e;
-            } else {
-                logger.info("Not correct operating system : " + OS.os());
-            }
-        }
+        assertTrue(properties.size() > 0);
     }
 
     @Test

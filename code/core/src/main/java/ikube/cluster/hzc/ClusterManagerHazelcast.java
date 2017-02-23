@@ -9,11 +9,9 @@ import ikube.cluster.IMonitorService;
 import ikube.model.Action;
 import ikube.model.IndexContext;
 import ikube.model.Server;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -48,7 +46,7 @@ public class ClusterManagerHazelcast extends AClusterManager {
     @SuppressWarnings("StringBufferReplaceableByString")
     public void initialize() {
         random = new Random();
-        ip = UriUtilities.getIp();
+        ip = URI.getIp();
 
         Hazelcast.setOutOfMemoryHandler(outOfMemoryHandler);
         int port = hazelcastInstance.getCluster().getLocalMember().getInetSocketAddress().getPort();

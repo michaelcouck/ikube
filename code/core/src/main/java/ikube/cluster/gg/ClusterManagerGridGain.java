@@ -5,7 +5,7 @@ import ikube.cluster.AClusterManager;
 import ikube.model.Action;
 import ikube.model.Server;
 import ikube.toolkit.THREAD;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridException;
 import org.gridgain.grid.GridFuture;
@@ -45,7 +45,7 @@ public class ClusterManagerGridGain extends AClusterManager {
     private Grid grid;
 
     public void initialize() throws GridException {
-        ip = UriUtilities.getIp();
+        ip = URI.getIp();
     }
 
     /**

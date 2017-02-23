@@ -29,7 +29,7 @@ public class THREADTest extends AbstractTest {
             this(1000);
         }
 
-        public Sleepy(long sleep) {
+        Sleepy(long sleep) {
             this.sleep = sleep;
         }
 
@@ -104,13 +104,8 @@ public class THREADTest extends AbstractTest {
         THREAD.destroy(name);
         logger.info("Future : " + future.isCancelled() + ", " + future.isDone());
 
-        // TODO: This does not work on CentOs!!!!!! WTFN? (Why the fuck not?)
-        if (OS.isOs("3.11.0-12-generic")) {
-            assertTrue(future.isDone());
-            assertTrue(future.isCancelled());
-        } else {
-            logger.info("Not correct operating system : ");
-        }
+        assertTrue(future.isDone());
+        assertTrue(future.isCancelled());
     }
 
     /**

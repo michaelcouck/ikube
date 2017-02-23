@@ -6,7 +6,7 @@ import ikube.model.IndexContext;
 import ikube.model.Indexable;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -57,7 +57,7 @@ public final class IndexManager {
     @SuppressWarnings("ConstantConditions")
     public static synchronized IndexWriter[] openIndexWriterDelta(final IndexContext indexContext) throws Exception {
         LOGGER.info("Opening delta writers on index context : " + indexContext.getName());
-        String ip = UriUtilities.getIp();
+        String ip = URI.getIp();
         String indexDirectoryPath = getIndexDirectoryPath(indexContext);
         // Find all the indexes in the latest index directory and open a writer on each one
         File latestIndexDirectory = getLatestIndexDirectory(indexDirectoryPath);

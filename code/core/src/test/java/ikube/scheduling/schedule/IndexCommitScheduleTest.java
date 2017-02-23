@@ -4,7 +4,7 @@ import ikube.AbstractTest;
 import ikube.IConstants;
 import ikube.action.index.IndexManager;
 import ikube.toolkit.FILE;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import mockit.Deencapsulation;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
@@ -27,50 +27,50 @@ import static org.mockito.Mockito.when;
  */
 public class IndexCommitScheduleTest extends AbstractTest {
 
-	/**
-	 * Class under test.
-	 */
-	private IndexCommitSchedule indexCommitSchedule;
+    /**
+     * Class under test.
+     */
+    private IndexCommitSchedule indexCommitSchedule;
 
-	@Before
-	public void before() {
-		indexCommitSchedule = new IndexCommitSchedule();
-		Deencapsulation.setField(indexCommitSchedule, "monitorService", monitorService);
-	}
+    @Before
+    public void before() {
+        indexCommitSchedule = new IndexCommitSchedule();
+        Deencapsulation.setField(indexCommitSchedule, "monitorService", monitorService);
+    }
 
-	@After
-	public void after() {
-		FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
-	}
+    @After
+    public void after() {
+        FILE.deleteFile(new File(indexContext.getIndexDirectoryPath()));
+    }
 
-	@Test
-	public void run() throws Exception {
-		IndexWriter[] indexWriters = null;
-		try {
-			indexWriters = IndexManager.openIndexWriterDelta(indexContext);
+    @Test
+    public void run() throws Exception {
+        IndexWriter[] indexWriters = null;
+        try {
+            indexWriters = IndexManager.openIndexWriterDelta(indexContext);
 
-			when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
-			when(indexContext.getIndexWriters()).thenReturn(indexWriters);
-			addDocuments(indexWriter, IConstants.CONTENTS, "Hello world");
+            when(indexContext.isDelta()).thenReturn(Boolean.TRUE);
+            when(indexContext.getIndexWriters()).thenReturn(indexWriters);
+            addDocuments(indexWriter, IConstants.CONTENTS, "Hello world");
 
-			// There should be no segments file and the index doesn't exist yet
-			File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-			File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
-			Directory directory = FSDirectory.open(indexDirectory);
-			assertFalse(DirectoryReader.indexExists(directory));
+            // There should be no segments file and the index doesn't exist yet
+            File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
+            File indexDirectory = new File(latestIndexDirectory, URI.getIp());
+            Directory directory = FSDirectory.open(indexDirectory);
+            assertFalse(DirectoryReader.indexExists(directory));
 
-			indexCommitSchedule.run();
-			// There should be a segments file and we should be able to open the reader
-			assertTrue(DirectoryReader.indexExists(directory));
-			indexReader = DirectoryReader.open(directory);
-		} finally {
-			if (indexWriters != null) {
-				for (final IndexWriter indexWriter : indexWriters) {
-					IndexManager.closeIndexWriter(indexWriter);
-				}
-			}
-		}
+            indexCommitSchedule.run();
+            // There should be a segments file and we should be able to open the reader
+            assertTrue(DirectoryReader.indexExists(directory));
+            indexReader = DirectoryReader.open(directory);
+        } finally {
+            if (indexWriters != null) {
+                for (final IndexWriter indexWriter : indexWriters) {
+                    IndexManager.closeIndexWriter(indexWriter);
+                }
+            }
+        }
 
-	}
+    }
 
 }

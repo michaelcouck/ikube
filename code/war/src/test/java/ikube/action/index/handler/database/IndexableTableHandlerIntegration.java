@@ -9,6 +9,7 @@ import ikube.cluster.hzc.ClusterManagerHazelcast;
 import ikube.database.IDataBase;
 import ikube.model.*;
 import ikube.toolkit.PropertyConfigurer;
+import ikube.toolkit.URI;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.junit.After;
@@ -26,7 +27,6 @@ import static ikube.action.index.handler.database.QueryBuilder.getIdColumn;
 import static ikube.database.DatabaseUtilities.close;
 import static ikube.toolkit.ApplicationContextManager.getBean;
 import static ikube.toolkit.THREAD.*;
-import static ikube.toolkit.UriUtilities.getIp;
 import static java.lang.System.currentTimeMillis;
 import static java.net.InetAddress.getLocalHost;
 import static mockit.Deencapsulation.invoke;
@@ -191,7 +191,7 @@ public class IndexableTableHandlerIntegration extends IntegrationTest {
         try {
             indexContext.setBatchSize(10);
             indexContext.setThrottle(60000);
-            indexContext.setIndexWriters(openIndexWriter(indexContext, currentTimeMillis(), getIp()));
+            indexContext.setIndexWriters(openIndexWriter(indexContext, currentTimeMillis(), URI.getIp()));
             Thread thread = new Thread(new Runnable() {
                 public void run() {
                     sleep(10000);

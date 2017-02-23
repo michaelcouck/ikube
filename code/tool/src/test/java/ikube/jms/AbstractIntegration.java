@@ -5,7 +5,6 @@ import ikube.jms.connect.WebSphereConnector;
 import ikube.toolkit.THREAD;
 import org.apache.commons.lang.RandomStringUtils;
 import org.dom4j.Element;
-import org.mockito.Spy;
 
 public abstract class AbstractIntegration extends AbstractTest {
 
@@ -19,26 +18,10 @@ public abstract class AbstractIntegration extends AbstractTest {
 
     protected String headerNames = "headers";
 
-    @Spy
-    protected Publisher publisher;
-
     protected String[] queues = new String[]{
     };
 
     protected String queue = queues[20];
-
-    protected void publishRemoteWas(final String queue, final String headerValues, final String payload) throws Exception {
-        publisher.publish(
-                userid, // userid
-                password, // password
-                url, // url
-                connectionFactory, // connection factory
-                destinationPrefix + queue, // destination name
-                headerNames, // header names
-                headerValues, // header values
-                payload,
-                connectorType, 1, null);
-    }
 
     protected void randomNumber(final Element element) {
         String numbers = "1234567890";

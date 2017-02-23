@@ -6,7 +6,7 @@ import ikube.action.index.IndexManager;
 import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystem;
 import ikube.toolkit.FILE;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -140,7 +140,7 @@ public class IndexDeltaIntegration extends IntegrationTest {
     private IndexReader getIndexReader() throws Exception {
         String indexDirectoryPath = IndexManager.getIndexDirectoryPath(indexContext);
         File indexDirectory = IndexManager.getLatestIndexDirectory(indexDirectoryPath);
-        File indexDirectoryServer = new File(indexDirectory, UriUtilities.getIp());
+        File indexDirectoryServer = new File(indexDirectory, URI.getIp());
 
         Directory directory = FSDirectory.open(indexDirectoryServer);
         return DirectoryReader.open(directory);

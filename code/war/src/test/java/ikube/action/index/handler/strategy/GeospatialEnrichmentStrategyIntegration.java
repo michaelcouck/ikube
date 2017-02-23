@@ -8,7 +8,7 @@ import ikube.model.IndexContext;
 import ikube.model.IndexableFileSystemCsv;
 import ikube.toolkit.FILE;
 import ikube.toolkit.THREAD;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -44,7 +44,7 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
     public void aroundProcess() throws Exception {
         File file = FILE.findFileRecursively(new File("."), "min-eco.csv");
         indexableFileSystemCsv.setPath(file.getParentFile().getAbsolutePath());
-        IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), UriUtilities.getIp());
+        IndexWriter indexWriter = IndexManager.openIndexWriter(indexContext, System.currentTimeMillis(), URI.getIp());
         indexContext.setIndexWriters(indexWriter);
         ForkJoinTask<?> forkJoinTask = indexableHandlerFilesystemCsvHandler.handleIndexableForked(indexContext, indexableFileSystemCsv);
 
@@ -55,7 +55,7 @@ public class GeospatialEnrichmentStrategyIntegration extends IntegrationTest {
         IndexManager.closeIndexWriter(indexWriter);
         String indexPath = IndexManager.getIndexDirectoryPath(indexContext);
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexPath);
-        IndexReader indexReader = DirectoryReader.open(FSDirectory.open(new File(latestIndexDirectory, UriUtilities.getIp())));
+        IndexReader indexReader = DirectoryReader.open(FSDirectory.open(new File(latestIndexDirectory, URI.getIp())));
         for (int i = 0; i < indexReader.numDocs(); i++) {
             Document document = indexReader.document(i);
             assertNotNull(document.get(IConstants.LAT));

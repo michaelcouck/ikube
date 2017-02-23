@@ -5,7 +5,7 @@ import ikube.action.index.IndexManager;
 import ikube.mock.ApplicationContextManagerMock;
 import ikube.mock.ClusterManagerMock;
 import ikube.toolkit.FILE;
-import ikube.toolkit.UriUtilities;
+import ikube.toolkit.URI;
 import mockit.Deencapsulation;
 import mockit.Mockit;
 import org.apache.lucene.store.FSDirectory;
@@ -53,7 +53,7 @@ public class IsThisIndexCreatedTest extends AbstractTest {
         Lock lock = null;
         createIndexFileSystem(indexContext, "Some data : ");
         File latestIndexDirectory = IndexManager.getLatestIndexDirectory(indexContext.getIndexDirectoryPath());
-        File indexDirectory = new File(latestIndexDirectory, UriUtilities.getIp());
+        File indexDirectory = new File(latestIndexDirectory, URI.getIp());
         try {
             lock = getLock(FSDirectory.open(indexDirectory), indexDirectory);
             isIndexCreated = isThisIndexCreated.evaluate(indexContext);

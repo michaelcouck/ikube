@@ -314,13 +314,13 @@ public final class THREAD {
         FORK_JOIN_POOLS.clear();
 
         // And finally null all references to pools of threads
-        EXECUTOR_SERVICE = null;
-        FUTURES = null;
-        FORK_JOIN_POOLS = null;
+        // EXECUTOR_SERVICE = null;
+        // FUTURES = null;
+        // FORK_JOIN_POOLS = null;
     }
 
     public static boolean isInitialized() {
-        boolean serviceNull = EXECUTOR_SERVICE == null;
+        boolean serviceNull = EXECUTOR_SERVICE == null || EXECUTOR_SERVICE.isShutdown() || EXECUTOR_SERVICE.isTerminated();
         boolean futuresNull = FUTURES == null;
         boolean poolsNull = FORK_JOIN_POOLS == null;
         return !serviceNull && !futuresNull && !poolsNull;
