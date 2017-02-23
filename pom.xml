@@ -56,7 +56,7 @@
         <ikube-version>5.3.1</ikube-version>
 
         <encoding>UTF8</encoding>
-        <targetJdk>1.7</targetJdk>
+        <targetJdk>1.8</targetJdk>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 
         <!-- Spring -->
