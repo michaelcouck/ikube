@@ -1389,6 +1389,12 @@
                 <artifactId>javaee-api</artifactId>
                 <version>${javaee-api-version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>ikube</groupId>
+                <artifactId>ikube-com</artifactId>
+                <version>6.0.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -2,6 +2,7 @@ package ikube.data;
 
 import co.uk.hjcs.canyon.session.Session;
 import co.uk.hjcs.canyon.session.SessionFactory;
+import ikube.Constants;
 import ikube.IConstants;
 import ikube.database.ADataBaseJpa;
 import ikube.database.DataBaseJpaOracle;
@@ -39,7 +40,7 @@ public final class GeonamePopulator extends ADatabase {
         int batchSize = 10000;
         String sessionName = "geoname";
         Session session = SessionFactory.getSession(sessionName);
-        ADataBaseJpa dataBase = getDataBase(DataBaseJpaOracle.class, IConstants.PERSISTENCE_UNIT_ORACLE);
+        ADataBaseJpa dataBase = getDataBase(DataBaseJpaOracle.class, Constants.PERSISTENCE_UNIT_ORACLE);
         List<Object> geoNames = new ArrayList<>();
         skipTo(clazz, session, start);
         do {

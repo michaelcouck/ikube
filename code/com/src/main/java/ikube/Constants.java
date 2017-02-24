@@ -110,4 +110,12 @@ public interface Constants {
         .create();
 
     double MILLION = 1000000;
+
+    /**
+     * The persistence units' names.
+     */
+    String PERSISTENCE_UNIT_H2 = "IkubePersistenceUnitH2";
+    String PERSISTENCE_UNIT_DB2 = "IkubePersistenceUnitDb2";
+    String PERSISTENCE_UNIT_ORACLE = "IkubePersistenceUnitOracle";
+    String PERSISTENCE_UNIT_POSTGRES = "IkubePersistenceUnitPostgres";
 }
