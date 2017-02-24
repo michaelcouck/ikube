@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.Set;
  * @see IDataBase
  * @since 08-10-2011
  */
+@Transactional
 public abstract class ADataBaseJpa implements IDataBase {
 
     protected static final Logger LOGGER = Logger.getLogger(ADataBaseJpa.class);
@@ -31,6 +33,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("StringBufferReplaceableByString")
     public <T> Long count(final Class<T> klass) {
         StringBuilder query = new StringBuilder("select count(c) from ");
@@ -43,6 +46,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> T remove(final Class<T> klass, final Long id) {
         T toBeRemoved = find(klass, id);
         if (toBeRemoved != null) {
@@ -55,6 +59,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> void removeBatch(final List<T> batch) {
         for (final T t : batch) {
             remove(t);
@@ -65,6 +70,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T remove(final T object) {
         Object result = getEntityManager().merge(object);
@@ -76,6 +82,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public int remove(final String sql) {
         return getEntityManager().createNamedQuery(sql).executeUpdate();
     }
@@ -84,6 +91,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> T persist(final T object) {
         if (object != null) {
             getEntityManager().persist(object);
@@ -95,6 +103,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> void persistBatch(final List<T> list) {
         for (final T t : list) {
             persist(t);
@@ -105,6 +114,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T merge(final T object) {
         Object result = null;
@@ -118,6 +128,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> void mergeBatch(final List<T> batch) {
         for (final T t : batch) {
             merge(t);
@@ -128,6 +139,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> T find(final Class<T> klass, final Long id) {
         return getEntityManager().find(klass, id);
     }
@@ -136,6 +148,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> List<T> find(final Class<T> klass, final int firstResult, final int maxResults) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(klass);
@@ -151,6 +164,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort,
                             final int firstResult, final int maxResults) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -179,6 +193,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn) {
         List<T> entities = find(klass, fieldsToFilterOn, valuesToFilterOn, 0, 1);
         if (entities.size() == 0) {
@@ -191,6 +206,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn,
                             final int firstResult, final int maxResults) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -216,6 +232,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T find(final Long objectId) {
         try {
@@ -236,6 +253,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T find(final Class<T> klass, final String sql, final Map<String, Object> parameters) {
         String[] names = parameters.keySet().toArray(new String[parameters.keySet().size()]);
@@ -247,6 +265,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int firstResult,
                             final int maxResults) {
@@ -259,6 +278,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values) {
         Query query = getEntityManager().createNamedQuery(sql, klass);
@@ -270,6 +290,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int firstResult,
                             final int maxResults) {
@@ -284,6 +305,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     @SuppressWarnings("unchecked")
     public <T> T execute(final String sql, final String[] names, final Object[] values) {
         Query query = getEntityManager().createQuery(sql);
@@ -295,6 +317,7 @@ public abstract class ADataBaseJpa implements IDataBase {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public <T> T refresh(final T t) {
         getEntityManager().refresh(t);
         return t;

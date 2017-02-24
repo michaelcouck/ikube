@@ -1,5 +1,6 @@
 package ikube.database;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  * @version 01.00
  * @since 20-04-2009
  */
+@Transactional
 public interface IDataBase {
 
     /**
@@ -20,6 +22,7 @@ public interface IDataBase {
      * @param klass the class of entities to count
      * @return the number of rows in the database
      */
+    @Transactional
     <T> Long count(final Class<T> klass);
 
     /**
@@ -29,6 +32,7 @@ public interface IDataBase {
      * @param object the object that must be removed
      * @return the removed object, i.e. a refresh
      */
+    @Transactional
     <T> T remove(final T object);
 
     /**
@@ -38,6 +42,7 @@ public interface IDataBase {
      * @param sql the update/delete statement to execute on the database
      * @return the number of rows that were affected
      */
+    @Transactional
     int remove(final String sql);
 
     /**
@@ -48,6 +53,7 @@ public interface IDataBase {
      * @param objectId the id of the object to remove
      * @return the removed object, or null if no such object is found to remove
      */
+    @Transactional
     <T> T remove(final Class<T> klass, final Long objectId);
 
     /**
@@ -59,6 +65,7 @@ public interface IDataBase {
      * @param <T>   the type of object to batch remove
      * @param batch the list of objects to batch remove
      */
+    @Transactional
     <T> void removeBatch(final List<T> batch);
 
     /**
@@ -68,6 +75,7 @@ public interface IDataBase {
      * @return the refreshed object from the database, typically this object will have the unique id
      * filled in by the database
      */
+    @Transactional
     <T> T persist(final T object);
 
     /**
@@ -79,6 +87,7 @@ public interface IDataBase {
      * @param <T>  the type of entities to batch persist
      * @param list the list of entities to batch persist
      */
+    @Transactional
     <T> void persistBatch(final List<T> list);
 
     /**
@@ -90,6 +99,7 @@ public interface IDataBase {
      * @return the refreshed object from the database, typically this will be exactly
      * the same as the object to be merged
      */
+    @Transactional
     <T> T merge(final T object);
 
     /**
@@ -99,6 +109,7 @@ public interface IDataBase {
      * @param <T>   the type of entities to batch merge
      * @param batch the list of entities to batch merge
      */
+    @Transactional
     <T> void mergeBatch(final List<T> batch);
 
     /**
@@ -111,6 +122,7 @@ public interface IDataBase {
      * @param objectId the id of the object
      * @return the first object with the or or null if no such object can be found
      */
+    @Transactional
     <T> T find(final Long objectId);
 
     /**
@@ -122,6 +134,7 @@ public interface IDataBase {
      * @return the object or null if there is no such object or a runtime exception if there is more
      * than one result, meaning of course that there is a constraint violation, like unique indexes etc.
      */
+    @Transactional
     <T> T find(final Class<T> klass, final Long objectId);
 
     /**
@@ -132,6 +145,7 @@ public interface IDataBase {
      * @param endIndex   the last object in the results, i.e. the index of the last result
      * @return the list of objects from the database specified by the class type
      */
+    @Transactional
     <T> List<T> find(final Class<T> klass, final int startIndex, final int endIndex);
 
     /**
@@ -148,6 +162,7 @@ public interface IDataBase {
      * @param maxResults      and the size of the result set
      * @return the list of sorted entities from the database
      */
+    @Transactional
     <T> List<T> find(final Class<T> klass, final String[] fieldsToSortOn, final Boolean[] directionOfSort, final int firstResult, final int maxResults);
 
     /**
@@ -162,6 +177,7 @@ public interface IDataBase {
      * @return the entity that returned from the query and parameters. This could also result in
      * an entity not found exception and a non unique result exception
      */
+    @Transactional
     <T> T find(final Class<T> klass, final String sql, final Map<String, Object> parameters);
 
     /**
@@ -178,6 +194,7 @@ public interface IDataBase {
      * @param maxResults    the maximum results to return
      * @return the list of results determined by the sql, parameters and the limiting parameters
      */
+    @Transactional
     <T> List<T> find(final Class<T> klass, final String sql, final Map<String, Object> parameters, final int startPosition, final int maxResults);
 
     /**
@@ -192,6 +209,7 @@ public interface IDataBase {
      * @param values the values of the parameters to narrow the results
      * @return a single result from the query, either an array of object or a single object
      */
+    @Transactional
     <T> T execute(final String sql, final String[] names, final Object[] values);
 
     /**
@@ -206,6 +224,7 @@ public interface IDataBase {
      * @param values the values of the fields to use for the filter in the query
      * @return the entity that matches the fields and values, or null if no such entity exists
      */
+    @Transactional
     <T> T find(final Class<T> klass, final String sql, final String[] names, final Object[] values);
 
     /**
@@ -225,6 +244,7 @@ public interface IDataBase {
      * @param maxResults    the maximum results to return from the database
      * @return the list of entities in the database that match the names and values for the fields
      */
+    @Transactional
     <T> List<T> find(final Class<T> klass, final String sql, final String[] names, final Object[] values, final int startPosition, final int maxResults);
 
     /**
@@ -235,6 +255,7 @@ public interface IDataBase {
      * @param valuesToFilterOn the values in the target entity to use in the selection/filtering
      * @return the first entity that satisfies the query parameters or null if no such entity exists
      */
+    @Transactional
     <T> T find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn);
 
     /**
@@ -250,6 +271,7 @@ public interface IDataBase {
      * @param maxResults       the maximum results to return in the collection
      * @return the resultant collection, can be empty, based on the fields and values specified for the selection
      */
+    @Transactional
     <T> List<T> find(final Class<T> klass, final String[] fieldsToFilterOn, final Object[] valuesToFilterOn, final int firstResult, final int maxResults);
 
     /**
@@ -259,6 +281,7 @@ public interface IDataBase {
      * @param t the entity from the database to refresh with the latest data
      * @return the refreshed entity
      */
+    @Transactional
     <T> T refresh(final T t);
 
 }

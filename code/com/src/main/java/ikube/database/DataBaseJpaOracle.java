@@ -5,6 +5,7 @@ import ikube.Constants;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.transaction.Transactional;
 
 /**
  * @author Michael Couck
@@ -12,6 +13,7 @@ import javax.persistence.PersistenceContextType;
  * @see IDataBase
  * @since 19-11-2011
  */
+@Transactional
 public class DataBaseJpaOracle extends ADataBaseJpa {
 
     @PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = Constants.PERSISTENCE_UNIT_ORACLE)
