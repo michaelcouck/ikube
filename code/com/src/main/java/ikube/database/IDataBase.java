@@ -13,6 +13,7 @@ import java.util.Map;
  * @version 01.00
  * @since 20-04-2009
  */
+@SuppressWarnings("unused")
 @Transactional
 public interface IDataBase {
 
