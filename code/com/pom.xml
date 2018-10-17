@@ -27,7 +27,7 @@
         <gson-version>2.0</gson-version>
         <junit-version>4.8.2</junit-version>
         <jmockit-version>1.8</jmockit-version>
-        <httpclient-version>4.2.1</httpclient-version>
+        <httpclient-version>4.3.6</httpclient-version>
         <mockito-all-version>1.9.5</mockito-all-version>
         <simple-jndi-version>0.11.4.1</simple-jndi-version>
         <tika-version>1.7</tika-version>
@@ -166,10 +166,15 @@
             <artifactId>log4j</artifactId>
             <version>${log4j-version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>combinatoricslib</groupId>
             <artifactId>combinatoricslib</artifactId>
             <version>${combinatoricslib-version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.googlecode.combinatoricslib</groupId>
+            <artifactId>combinatoricslib</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
