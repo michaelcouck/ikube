@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://maven.apache.org/POM/4.0.0
+        http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -45,11 +49,11 @@
                 </executions>
             </plugin>
             <!-- No idea what this plugin does, perhaps linked to PMD? -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jxr-maven-plugin</artifactId>
                 <version>2.0-beta-1</version>
-            </plugin>
+            </plugin>-->
             <!--
                 This plugin enhances the entities for OpenJpa. Very important for the
                 performance of OpenJpa, indeed the performance will drop 1000% if the
@@ -89,8 +93,7 @@
         <dependency>
             <groupId>ikube</groupId>
             <artifactId>ikube-com</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
+            <version>6.0.0</version>
         </dependency>
 
         <dependency>
@@ -132,27 +135,27 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.spring-security-oauth</groupId>
@@ -162,12 +165,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring-security-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
