@@ -50,6 +50,7 @@
         <module>code/site</module>
         <module>code/web</module>
         <module>code/tool</module>
+        <module>code/connectors/google-marketing-mcp</module>
     </modules>
 
     <properties>
